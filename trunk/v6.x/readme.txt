@@ -1,4 +1,4 @@
-// $Id: readme.txt,v 1.26 2009/09/16 18:41:09 wplaat Exp $
+// $Id: readme.txt,v 1.32 2009/10/27 19:01:51 wplaat Exp $
 
 Created by wplaat (Plaatsoft)
 
