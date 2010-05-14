@@ -1,5 +1,5 @@
 <?php
-// $Id: addressbook.install,v 1.3 2007/09/07 14:02:01 wplaat Exp $
+// $Id: addressbook.install,v 1.9 2009/10/27 19:01:51 wplaat Exp $
 
 /**
  * Install the initial schema.
