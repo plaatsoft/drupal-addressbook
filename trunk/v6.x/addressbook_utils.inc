@@ -28,8 +28,20 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-function addressbook_sortbar($Sort,$Action)
-{
+function addressbook_view_timestamp($last_updated) {
+
+	if ($last_updated!="") {
+		list($year, $time) = split(' ', $last_updated);
+		list($access_year, $access_month, $access_day) = split('[/.-]', $year);
+		list($access_hour, $access_minute, $access_sec) = split(':', $time);
+	
+		$page = $access_day.'-'.$access_month.'-'.$access_year.' '.$access_hour.':'.$access_minute.':'.$access_sec;
+	}
+	return $page;
+}
+
+function addressbook_sortbar($Sort,$Action) {
+
 	$sort_bar=array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P", "Q","R","S","T","U","V","W","X","Y","Z");
 	for ($i=0; $i<26; $i++)
 	{
@@ -48,6 +60,44 @@ function addressbook_sortbar($Sort,$Action)
  */
 function addressbook_hiddenlink($form,$key,$value,$action,$label) {
    return '<a href="#" onClick="hiddenInput(\''.$form.'\', \''.$key.'\', \''.$value.'\',\''.$action.'\');">'.$label.'</a>';
+}
+
+/** 
+ * View text input field.
+ */
+function addressbook_view_text($id, $size, $maxSize, $value, $readonly) {
+	
+	if ($readonly) {
+		return $value;
+	} else {	
+		return '<input id="text" name="'.$id.'" size="'.$size.'" maxlength="'.$maxSize.'" type="text" value="'.$value.'">';
+	}
+}
+
+/** 
+ * Oostpoort form item.
+ */
+function addressbook_form_item($label,$value,$description, $readonly) {
+	
+	if ($value!="") {
+		
+		$page .= '<div class="form-item">';
+		
+		$page .= '<label>';
+		$page .= $label;
+		$page .= '</label>';
+		
+		$page .= $value;
+		
+		if (($description!="") && !$readonly) {
+			$page .= '<div class="description">';
+			$page .= $description;
+			$page .= '</div>';
+		}
+		
+		$page .= '</div>';
+	}
+	return $page;
 }
 
 /*
@@ -141,15 +191,12 @@ function view_birthday($birthday_day,$birthday_month,$birthday_year,$readonly) {
  * @ owner
  * @ return HTML
  */
-function view_owner($uid, $readonly) {
+function addressbook_view_owner($uid, $readonly) {
 
    global $user;
 
-   $page.='<tr><td valign="top" width=15%>';
-   $page.=t('Owner');
-   $page.='</td><td>';
-
-   if ( $readonly=='0' ) {
+   if ( ! $readonly ) {
+	
      $query  = 'SELECT uid, name FROM {users}';
      $queryResult = db_query($query);
 
@@ -166,18 +213,21 @@ function view_owner($uid, $readonly) {
      if ($uid==0) $page.='selected="selected" ';
      $page.='>'.t('No owner').'</option>';
      $page.='</select>';
-   }
-   else {
-     if ($uid==0) {
-       $page .= '<input id="text" name="owner" size="20" maxlength="20" type="text" value="'.t('No owner').'" READONLY />';
-     } else
-     {
-       $query  = 'SELECT uid, name FROM {users} WHERE uid='.$uid;
-       $queryResult = db_query($query);
-       $tmp = db_fetch_object($queryResult);
+	  
+   } else {
+	
+		if ($uid==0) {
+	  
+			$page .= t('No owner');
+		
+		} else {
+	  
+			$query  = 'SELECT uid, name FROM {users} WHERE uid='.$uid;
+			$queryResult = db_query($query);
+			$tmp = db_fetch_object($queryResult);
 
-       $page .= '<input id="text" name="owner" size="20" maxlength="20" type="text" value="'.$tmp->name.'" READONLY />';
-     }
+			$page .= $tmp->name;
+		}
    }
    $page.='</td></tr>';
    return $page;
@@ -285,15 +335,9 @@ function view_roles($active_roles,$wanted_roles,$readonly) {
  * This function will show all available countries.
  * @return HTML
  */
-function view_country($country, $readonly) {
+function addressbook_view_country($country, $readonly) {
 
-   $page='';
-
-   $page.='<tr><td valign="top">';
-   $page.=t('Country');
-   $page.='</td><td>';
-
-   if ($readonly=='0') {
+   if (! $readonly) {
      $countries=array( 'Afghanistan','Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla',
       'Antigua and Barbuda', 'Argentina', 'Armenia',  'Ascension Island', 'Australia','Austria',
       'Azerbaijan', 'Bahamas', 'Bahrain',  'Bangladesh',   'Barbados',  'Belarus',  'Belgium',
@@ -338,12 +382,12 @@ function view_country($country, $readonly) {
          $page.='>'.$countries[$i].'</option>';
       }
       $page.='</select> ';
+		
+   } else {
+	
+     $page .= $country;
+	  
    }
-   else {
-     $page .= '<input id="text" name="contry" size="50" maxlength="50" type="text" value="'.$country.'" READONLY />';
-   }
-   $page.='</td>';
-   $page.='</tr>';
    return $page;
 }
 
