@@ -842,10 +842,10 @@ function member_edit( $mid=0 )  {
 
   if ( user_access('access administration pages') ) {
       // Only administrator can overrule owner information.
-     $page .= view_owner($owner,'0');
+     $page .= addressbook_view_owner($owner,'0');
   }
   else {
-     $page .= view_owner($owner,'1');
+     $page .= addressbook_view_owner($owner,'1');
   }
   $page .= view_line(t('Last updated'),'<input id="text" name="last_updated" size="22" type="text" value="'.$last_updated.'" READONLY />');
 

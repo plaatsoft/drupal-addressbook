@@ -29,9 +29,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
  
-// ************************************
+// *********************************************************************************
 // StateMachine
-// ************************************
+// *********************************************************************************
  
 function family_list($PrsId=0) {
 
@@ -57,6 +57,25 @@ function family_list($PrsId=0) {
 			$page = addressbook_family_view();
 			break;
 			
+		case 'FamilyEdit':
+			$page = addressbook_family_edit();
+			break;
+			
+		case 'FamilyInsert':
+			addressbook_family_insert();
+			$page = addressbook_family_view();
+			break;
+			
+		case 'FamilyUpdate':
+			addressbook_family_update();
+			$page = addressbook_family_view();
+			break;
+			
+		case 'FamilyDelete':
+			addressbook_family_delete();
+			$page = addressbook_family_list();
+			break;
+			
 		default: 
 			$page = addressbook_family_list();
 			break;
@@ -65,9 +84,9 @@ function family_list($PrsId=0) {
 }
 			
 			
-// ************************************
+// *********************************************************************************
 // Views
-// ************************************
+// *********************************************************************************
 
 /*
  * Function shows all family in a list form
@@ -204,7 +223,7 @@ function addressbook_family_list() {
 		} else {
 			$name = $data->last_name.', '.$data->middle_name;
 		}
-		$page_tmp .= oostpoort_hiddenlink('AddressbookForm', 'AdrId', $data->fid, 'FamilyView', $name);
+		$page_tmp .= oostpoort_hiddenlink('AddressbookForm', 'fid', $data->fid, 'FamilyView', $name);
 		$page_tmp .= '</td>';	
 	
 		$page_tmp .= '<td>';
@@ -239,6 +258,9 @@ function addressbook_family_list() {
 	$page .= '</tbody>';
 	$page .= '</table>';
  
+	$page .= addressbook_hiddenlink('AddressbookForm','fid',0,'FamilyEdit',t('Family New'));
+	$page .= ' | '.l(t("Back"), URL_ADDRESSBOOK);
+	
 	$page .= '</div>';
 	$page .= '</form>';
 	
@@ -263,7 +285,7 @@ function addressbook_family_view( )  {
 	// Get posted Inputs
 	// *****************************
 	
-	$AdrId=$_POST["AdrId"];
+	$fid=$_POST["fid"];
 	
 	// *****************************
 	// Query Database
@@ -283,7 +305,7 @@ function addressbook_family_view( )  {
 		FROM 
 			{addressbook_family} 
 		WHERE 
-			FID='.$AdrId;
+			FID='.$fid;
 			
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
@@ -294,18 +316,15 @@ function addressbook_family_view( )  {
 
 	drupal_set_title(t('Addressbook family view') );
 
-	$page .= '<form name="AddressbookForm" method="POST" >';	
+	$page .= '<form enctype="multipart/form-data" name="AddressbookForm" method="POST" >';
 	$page .= '<div class="addressbook">';
 	
-	$page .= '<form enctype="multipart/form-data" name="OostpoortForm" method="POST" >';
-	$page .= '<div class="oostpoort">';
-	
-	//addressbook_save_picture("Adr",$AdrId);
+	//addressbook_save_picture("fid",$fid);
 						
 	$page .= '<fieldset>' ;
 	$page .= '<legend></legend>';
 
-	//$page .= addressbook_picture("Adr",$AdrId, 0, 0,"right", true);
+	//$page .= addressbook_picture("Adr",$fid, 0, 0,"right", true);
 	
 	$page .= '<h4>'.$data->middle_name.' '.$data->last_name.'</h4>';
 	$page .= '<h4>'.$data->street.'</h4>';	
@@ -327,7 +346,7 @@ function addressbook_family_view( )  {
 		FROM 
 			{addressbook_member} 
 		WHERE 
-			fid='.$AdrId.' 
+			fid='.$fid.' 
 		ORDER BY birth_day';
 		
 	$queryResult = db_query($query);
@@ -401,12 +420,12 @@ function addressbook_family_view( )  {
 	
 	if (check_access($uid)) {
   
-		$page .= oostpoort_hiddenlink('AddressbookForm','AdrId',$AdrId,'EditFamily',t('Edit Family'));
-		$page .= ' | '.oostpoort_hiddenlink('AddressbookForm','AdrId',$AdrId,'EditFamily',t('Add Member'));
-		$page .= ' | '.oostpoort_hiddenlink('AddressbookForm','AdrId',$AdrId,'AddPicture',t('Add Picture'));
+		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('Family Edit'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'MemberAdd',t('Member Add'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyPicture',t('Picture Add'));
 	
 		if (variable_get('addressbook_map_link',0)==1) {
-			$page .= ' | '.oostpoort_hiddenlink('AddressbookForm','AdrId',$AdrId,'Map',t('Map'));
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'Map',t('Show Map'));
 		}
 	}
 	
@@ -415,36 +434,108 @@ function addressbook_family_view( )  {
 	$page .= '</div>';
 	$page .= '</form>';
 	
-	print theme("page", $page);
+	return $page;
 }
 
 /**
  * Render a page showing the selected family in detail
  * @return HTML
  */
-function family_edit($fid=0)  {
+function addressbook_family_edit()  {
 
 	global $user;
-	$page = '<div class="addressbook">';
 
-	if ($fid==0) {
-		drupal_set_title(t('Addressbook create new family'));
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$fid=htmlentities($_POST["fid"]);
+	
+	// *****************************
+	// Query Database
+	// *****************************
+	
+	$query = '
+		SELECT 
+			fid, 
+			middle_name, 
+			last_name, 
+			street, 
+			zipcode, 
+			city, 
+			country, 
+			telephone, 
+			last_updated, 
+			uid 
+		FROM 
+			{addressbook_family} 
+		WHERE 
+			fid='.$fid;
+			
+	$queryResult = db_query($query);
+	$data = db_fetch_object($queryResult);
+
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	if ( isset($_POST["middle_name"]) ) {
+		$middle_name=htmlentities($_POST['middle_name']);
 	} else {
-		drupal_set_title(t('Addressbook edit family'));
+	   $middle_name=$data->middle_name;
 	}
-
-	// Validate HTTP URL parameter
-	if ( !check_number($fid) )
-	{
-		return hacker_warning();
+	
+	if ( isset($_POST["last_name"]) ) {
+		$last_name=htmlentities(ucfirst($_POST['last_name']));
+	} else {
+		$last_name=$data->last_name;
 	}
+	
+	if ( isset($_POST["street"]) ) {
+		$street=htmlentities(ucfirst($_POST['street']));
+	} else {
+		$street=$data->street;
+	}
+	
+	if ( isset($_POST["zipcode"]) ) {
+		$zipcode=htmlentities($_POST['zipcode']);
+	} else {
+		$zipcode=$data->zipcode;
+	}
+	
+	if ( isset($_POST["city"]) ) {
+		$city=htmlentities($_POST['city']);
+	} else {
+		$city=$data->city;
+	}
+	
+	if ( isset($_POST["country"]) ) {
+		$country=htmlentities($_POST['country']);
+	} else {
+		$country=$data->country;
+	}
+	
+	if ( isset($_POST["telephone"]) ) {
+		$telephone=htmlentities($_POST['telephone']);
+	} else {
+		$telephone=$data->telephone;
+	}
+	
+	if ( isset($_POST["owner"]) ) {
+		$owner=htmlentities($_POST['owner']);
+	} else {
+		$owner=$data->owner;
+	}
+	
+	// *****************************
+	// Create Page
+	// *****************************
 
-	// Save fid in session scope
-	$_SESSION["fid"]=$fid;
-  
-	// Clear mid in session scope
-	$_SESSION["mid"]=0;
+	$page .= '<form name="AddressbookForm" method="POST" >';	
+	$page .= '<div class="addressbook">';
 
+	drupal_set_title(t('Addressbook family edit'));
+	
 	// Check access rights
 	if ( $fid != 0 ) {
 	
@@ -461,290 +552,118 @@ function family_edit($fid=0)  {
 		}
 	}	
 
-	// Fetch data from HTTP request
-	$commit = isset($_POST['commit']) ? '1' : '0';
-	$family_delete = isset($_POST['family_delete']) ? '1' : '0';
-	$go_delete = isset($_POST['go_delete']) ? '1' : '0';
-
-	$middle_name=htmlentities($_POST['middle_name']);
-	$last_name=htmlentities(ucfirst($_POST['last_name']));
-	$street=htmlentities(ucfirst($_POST['street']));
-	$zipcode=htmlentities($_POST['zipcode']);
-	$city=htmlentities(ucfirst($_POST['city']));
-	$country=htmlentities($_POST['country']);
-	if ($country=='') {
-		$country=variable_get('addressbook_country', 'Nederland');
-	}
-	$telephone=htmlentities($_POST['telephone']);
-	$owner=htmlentities($_POST['owner']);
-
-	// Delete are you sure form
-	if (($family_delete=='1') && ($fid!='0') && ($go_delete=='0')) {
-		$page .= '<br/>';
-		$page .= t('Are you sure you want to delete this family?');
-		$page .= '<br/>';
-		$page .= '<br/>';
-		$page .= '<table align="left">';
-		$page .= '<tr><td>';
-		$page .= '<form action="'.url(URL_FAMILY_EDIT.'/'.$fid).'" method="POST">';
-		$page .= '<input type="submit" name="go_delete" value="'.t('Yes').'" />';
-		$page .= '<input type="hidden" name="family_delete" />';
-		$page .= '</form>';
-		$page .= '</td><td>';
-		$page .= '<form action="'.url(URL_FAMILY_EDIT.'/'.$fid).'" method="POST">';
-		$page .= '<input type="submit" name="cancel_delete" value="'.t('No').'" />';
-		$page .= '</form>';
-		$page .= '</td></tr>';
-		$page .= '</table>';
-		$page .= '</div>';
-		return $page;
-	}
-
-	// Delete selected address in database
-	if (($commit=='0') && ($family_delete=='1') && ($fid!='0') && ($go_delete=='1')) {
-		$query = 'DELETE FROM {addressbook_family} WHERE fid='.$fid;
-		$result = db_query($query);
-		if ($result==1) {
-			// Query succesfull
-			watchdog('user', 'Family '.$fid.' is deleted in the addressbook');
-			return family_list($_SESSION["sort"]);
-		} else {
-			// Query error
-			$page .= '<br/>';
-			$page .= t('Failed to deleted the selected family, try again');
-			$page .= '<br/>';
-			$page .= '<br/>';
-			$page .= '<form action="'.url(URL_FAMILY_LIST.'/'.$_SESSION["sort"]).'" method="POST">';
-			$page .= '<input type="submit" value="'.t('Return').'" />';
-			$page .= '</form>';
-			$page .= '</div>';
-			return $page;
-		}
-	}
-
-	// Insert new family in database
-	if (($commit=='1') && ($family_delete=='0') && ($fid == '0')) {
-		$error=0;
-
-		// Valid input.
-		if ($last_name=='') $error=1;
-		if ($street=='') $error=1;
-		if ($zipcode=='') $error=1;
-		if ($city=='') $error=1;
-
-		if ($error=='0') {
-			if (($owner==0) && !user_access('access administration pages')) {
-				// Set new owner because items did not found owner yet!)
-				$owner=$user->uid;
-			}
-
-			if (insert_family($middle_name, $last_name, $street, $zipcode, $city, $country, $telephone, $owner)) {
-         
-				// Query succesfull
-				return family_list($_SESSION["sort"]);
-				
-			} else {
-				
-				// Query error
-				$page .= '<br/>';
-				$page .= t('Failed to create a new family, try again!');
-				$page .= '<br/>';
-				$page .= '<br/>';
-				$page .= '<form action="'.url(URL_FAMILY_LIST.'/'.$_SESSION["sort"]).'" method="POST">';
-				$page .= '<input type="submit" value="'.t('Return').'" />';
-				$page .= '</form>';
-				$page .= '</div>';
-				return $page;
-			}
-		}
-	}
-
-	// Update address in database if input in valied
-	if (($commit=='1') && ($family_delete=='0') && ($fid != '0')) {
+	$page .= '<fieldset>' ;	
+	$page .= '<legend>'.t('Family details').'</legend>';
+	
+	$page .= addressbook_form_item(
+		t("Last Access"),
+		addressbook_view_timestamp($data->last_updated),
+		t("Last access date"), 
+		true );
 		
-		$error=0;
+	$page .= addressbook_form_item(
+		t("Owner"),
+		addressbook_view_owner($owner,$readonly),
+		t("Drupal owner (user) of address."), 
+		$readonly );
+		
+	$page .= addressbook_form_item(
+		t("Middle Name"),
+		addressbook_view_text("middle_name", 10, 10, $middle_name, $readonly),
+		t("Middle name of the family name (for example: van, de, etc..)"), 
+		$readonly );
 
-		// Valid input.
-		if ($last_name=='') $error=1;
-		if ($street=='') $error=1;
-		if ($zipcode=='') $error=1;
-		if ($city=='') $error=1;
+	$page .= addressbook_form_item(
+		t("Last Name"),
+		addressbook_view_text("last_name", 35, 35, $last_name, $readonly),
+		t("Last name of the family name."), 
+		$readonly );
 
-		if ($error=='0') {
+	$page .= addressbook_form_item(
+		t("Street"),
+		addressbook_view_text("street", 50, 50, $street, $readonly),
+		t("Last name of the family name."), 
+		$readonly );
 
-			if (($owner==0) && !user_access('access administration pages')) {
-				// Set new owner because items did not found owner yet!)
-				$owner=$user->uid;
-			}
-			if (update_family( $middle_name, $last_name, $street, $zipcode, $city, $country, $telephone, $owner, $fid)) {
-				// Query succesfull
-				return family_view2($fid);
-			} else {
-				// Query failed
-				$page .= '<br/>';
-				$page .= t('Failed to update the family, try again!');
-				$page .= '<br/>';
-				$page .= '<br/>';
-				$page .= '<form action="'.url(URL_FAMILY_VIEW.'/').$fid.'" method="POST">';
-				$page .= '<input type="submit" value="'.t('Return').'" />';
-				$page .= '</form>';
-				$page .= '</div>';
-				return $page;
-			}
-		}
+	$page .= addressbook_form_item(
+		t("Zipcode"),
+		addressbook_view_text("zipcode", 8, 8, $zipcode, $readonly),
+		t("Zipcode of family address."), 
+		$readonly );
+		
+	$page .= addressbook_form_item(
+		t("City"),
+		addressbook_view_text("city", 50, 50, $city, $readonly),
+		t("City of family address."), 
+		$readonly );
+		
+	$page .= addressbook_form_item(
+		t("Country"),
+		addressbook_view_country($country, $readonly),
+		t("Country of family address."), 
+		$readonly );
+		
+	$page .= addressbook_form_item(
+		t("Telephone"),
+		addressbook_view_text("telephone", 16, 16, $telephone, $readonly),
+		t("Telephone of family address."), 
+		$readonly );
+
+	// Menu bar
+	if ($fid==0) {
+		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyInsert',t('Save'));
+	} else {
+		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyUpdate',t('Save'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Delete'));
 	}
-
-	// Fetch address from database
-	if (($fid!='0') && ($commit=='0')) {
-		$query  = 'SELECT fid, middle_name, last_name, street, zipcode, city, country, telephone, ';
-		$query .= 'last_updated, uid FROM {addressbook_family} WHERE fid='.$fid;
-		$queryResult = db_query($query);
-		$tmp = db_fetch_object($queryResult);
-
-		// If no data is found. Show anti hacking message
-		if ($tmp==null) {
-			return hacker_warning();
-		}
-
-		$middle_name=$tmp->middle_name;
-		$last_name=$tmp->last_name;
-		$street=$tmp->street;
-		$zipcode=$tmp->zipcode;
-		$city=$tmp->city;
-		$country=$tmp->country;
-		$telephone=$tmp->telephone;
-		$owner=$tmp->uid;
-		list($year, $time) = split(' ', $tmp->last_updated);
-		list($access_year, $access_month, $access_day) = split('[/.-]', $year);
-		list($access_hour, $access_minute, $access_sec) = split(':', $time);
-		$last_updated=$access_day.'-'.$access_month.'-'.$access_year.' '.$access_hour.':'.$access_minute.':'.$access_sec;
-	}
-
-	// Show address information in readonly mode
-	$page .= '<br/>';
-
-	$page .= '<form action="'.url(URL_FAMILY_EDIT.'/').$fid.'" method="POST">';
-	$page .= '<table cellpadding=2 >';
-
-   if ( user_access('access administration pages') ) {
-      // Only administrator can overrule owner information.
-     $page .= view_owner($owner,'0');
-  }
-  else {
-     $page .= view_owner($owner,'1');
-  }
-
-  $page .= view_line(t('Last updated'),'<input id="text" name="last_updated" size="22" type="text" value="'.$last_updated.'" READONLY />');
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('Middle Name');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="middle_name" size="10" maxlength="10" type="text" value="'.$middle_name.'"/>';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('Last Name*');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="last_name" size="35" maxlength="35" type="text" value="'.$last_name.'" ';
-  if (($last_name=='') && ($commit=='1')) $page .= 'class="form-text required error" />'; else $page .= '/>';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('Street*');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="street" size="50" maxlength="50" type="text" value="'.$street.'" ';
-  if (($street=='') && ($commit=='1')) $page .= 'class="form-text required error" />'; else $page .= '/>';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('Zipcode*');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="zipcode" size="8" maxlength="8" type="text" value="'.$zipcode.'" ';
-  if (($zipcode=='') && ($commit=='1')) $page .= 'class="form-text required error" />'; else $page .= '/>';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('City*');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="city" size="50" maxlength="50" type="text" value="'.$city.'" ';
-  if (($city=='') && ($commit=='1')) $page .= 'class="form-text required error" />'; else $page .= '/>';
-  $page .= '</td></tr>';
-
-  $page .= view_country($country, '0');
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('Telephone');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="telephone" size="16" maxlength="16" type="text" value="'.$telephone.'" />';
-  $page .= '</td></tr>';
-
-  $page .= '</table>';
-
-  $page .= '<br/>';
-  $page .= t('* Marked fields are mandatory!').'<br/>';
-
-   // Show menu Bar
-  $page .= '<br/>';
-  $page .= '<table align="left">';
-  $page .= '<tr>';
-
-  $page .= '<td valign="top">';
-  $page .= '<tr><td valign="top">';
-  $page .= '<input type="hidden" name="fid" value="'.$fid.'" />';
-  $page .= '<input type="submit" name="commit" value="'.t('Commit').'" />';
-  $page .= '</form>';
-  $page .= '</td>';
-
-  if ($fid!='0') {
-    // Only existing families can be deleted
-    $page .= '<td valign="top">';
-    $page .= '<form action="'.url(URL_FAMILY_EDIT.'/').$fid.'" method="POST">';
-    $page .= '<input type="hidden" name="fid" value="'.$fid.'" />';
-    $page .= '<input type="submit" name="family_delete" value="'.t('Delete').'" />';
-    $page .= '</form>';
-    $page .= '</td>';
-  }
-
-  // Cancel new created address
-  $page .= '<td valign="top">';
-  if ($fid!='0') {
-     $page .= '<form action="'.url(URL_FAMILY_VIEW.'/').$fid.'" method="POST">';
-  } else
-  {
-     $page .= '<form action="'.url(URL_FAMILY_LIST.'/'.$_SESSION["sort"]).'" method="POST">';
-  }
-  $page .= '<input type="hidden" name="fid" value="'.$fid.'" />';
-  $page .= '<input type="submit" value="'.t('Cancel').'" />';
-  $page .= '</form>';
-  $page .= '</td>';
-
-  $page .= '</tr>';
-  $page .= '</table>';
-
-  $page .= '<br/>';
-  $page .= '<br/>';
-
-  $page .= '</div>';
-  print theme("page", $page);
+	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
+	
+	$page .= '</fieldset>';	
+	
+	$page .= '</div>';
+	$page .= '</form>';
+	
+	return $page;
 }
 
-// ************************************
+// *********************************************************************************
 // Database functions
-// ************************************
+// *********************************************************************************
 
 /*
  * insert family SQL function
  * @return true of false
  */
-function insert_family(
-		$middle_name, 
-		$last_name, 
-		$street, 
-		$zipcode, 
-		$city, 
-		$country, 
-		$telephone, 
-		$owner) {
+function addressbook_family_insert() {
+
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$fid=htmlentities($_POST["fid"]);
+	
+	$middle_name=htmlentities($_POST['middle_name']);
+	
+	$last_name=htmlentities(ucfirst($_POST['last_name']));
+	
+	$street=htmlentities(ucfirst($_POST['street']));
+	
+	$zipcode=htmlentities($_POST['zipcode']);
+	
+	$city=htmlentities(ucfirst($_POST['city']));
+	
+	$country=htmlentities($_POST['country']);
+	if ($country=='') {
+		$country=variable_get('addressbook_country', 'Nederland');
+	}
+
+	$telephone=htmlentities($_POST['telephone']);
+
+	$owner=htmlentities($_POST['owner']);
+	
+	// *****************************
+	// Update Database
+	// *****************************
 
 	$query  = 'INSERT INTO addressbook_family (middle_name, last_name, street, zipcode, city, ';
 	$query .= 'country, telephone, uid, last_updated) VALUES (';
@@ -758,32 +677,74 @@ function insert_family(
 	$query .= '"'.$owner.'",';
 	$query .= 'SYSDATE() )';
 
-	$result = db_query($query);
-	if ($result==1) {
-		// Query succesfull
-		watchdog('user', 'A family is created in the addressbook');
-		return true;
-	} else {
-		// Query failed
-		return false;
-	}
+	db_query($query);
+	
+	// Check new family entry.
+	$query = '
+	    select 
+			fid 
+		from 
+			{addressbook_family} 
+		where 
+			zipcode like "'.$zipcode.'" and 
+			street like "'.$street.'"';
+			
+	$queryResult = db_query($query);
+	$tmp = db_fetch_object($queryResult);
+	$fid = $tmp->fid;
+	
+	$_SESSION['fid']=$fid;
+	
+	// *****************************
+	// create message
+	// *****************************
+	
+	if ($fid!=0) {
+		$msg .= t('Family').' '.$fid.' '.t('created!');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);
+		
+		return 0;
+	} 
+	
+	return 1;
 }
 
 /*
  * update family SQL function
  * @return true of false
  */
-function update_family( 
-		$middle_name, 
-		$last_name, 
-		$street, 
-		$zipcode, 
-		$city, 
-		$country, 
-		$telephone, 
-		$owner, 
-		$fid) {
+function addressbook_family_update() {
 
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$fid=htmlentities($_POST["fid"]);
+	
+	$middle_name=htmlentities($_POST['middle_name']);
+	
+	$last_name=htmlentities(ucfirst($_POST['last_name']));
+	
+	$street=htmlentities(ucfirst($_POST['street']));
+	
+	$zipcode=htmlentities($_POST['zipcode']);
+	
+	$city=htmlentities(ucfirst($_POST['city']));
+	
+	$country=htmlentities($_POST['country']);
+	if ($country=='') {
+		$country=variable_get('addressbook_country', 'Nederland');
+	}
+
+	$telephone=htmlentities($_POST['telephone']);
+
+	$owner=htmlentities($_POST['owner']);
+	
+	// *****************************
+	// Update Database
+	// *****************************
+	
 	$query = 'UPDATE addressbook_family SET ';
 	$query .= 'middle_name = "'.$middle_name.'",';
 	$query .= 'last_name = "'.$last_name.'",';
@@ -797,17 +758,53 @@ function update_family(
 	$query .= 'WHERE fid='.$fid;
 
 	$result = db_query($query);
-	if ($result==1) {
-		// Query succesfull
-		watchdog('user', 'Family '.$fid.' is updated in addressbook');
-		return true;
-		
-	} else {
-		// Query failed
-		return false;
-	}
+	
+	// *****************************
+	// create message
+	// *****************************
+	
+	$msg .= t('Family').' '.$fid.' '.t('updated!');
+	drupal_set_message($msg, 'status');
+	watchdog('user', $msg);
+	
+	return 0;
 }
 
-// ************************************
+/*
+ * delelete family SQL function
+ * @return true of false
+ */
+function addressbook_family_delete() {
+
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$fid=htmlentities($_POST["fid"]);
+	
+	// *****************************
+	// Database actions
+	// *****************************
+
+	if ($fid!=0) {
+	
+		$query = 'delete FROM addressbook_family WHERE fid='.$fid;		
+		db_query($query);  
+	
+		// *****************************
+		// Create message
+		// *****************************
+	
+		$msg .= t('Family').' '.$fid.' '.t('deleted!');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);
+		
+		return 0;
+	}
+	
+	return 1;		
+}
+
+// *********************************************************************************
 // The end
-// ************************************
+// *********************************************************************************
