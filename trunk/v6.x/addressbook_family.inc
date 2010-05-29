@@ -33,7 +33,7 @@
 // StateMachine
 // *********************************************************************************
  
-function family_list($PrsId=0) {
+function addressbook_family($PrsId=0) {
 
 	echo var_dump($_POST);
 	
@@ -93,8 +93,6 @@ function family_list($PrsId=0) {
  * @return HTML
  */
 function addressbook_family_list() {
-
-	global $user;
 
 	// *****************************
 	// Get posted variables
@@ -258,7 +256,7 @@ function addressbook_family_list() {
 	$page .= '</tbody>';
 	$page .= '</table>';
  
-	$page .= addressbook_hiddenlink('AddressbookForm','fid',0,'FamilyEdit',t('Family New'));
+	$page .= addressbook_hiddenlink('AddressbookForm','fid',0,'FamilyEdit',t('New family'));
 	$page .= ' | '.l(t("Back"), URL_ADDRESSBOOK);
 	
 	$page .= '</div>';
@@ -266,14 +264,6 @@ function addressbook_family_list() {
 	
 	return $page;
 }
-
-  /*if ( user_access('add address')) {
-    $page .= '<td ALIGN="right">';
-    $page .= '<form action="'.url(URL_FAMILY_EDIT.'/0').'" method="POST">';
-    $page .= '<input type="submit" value="'.t('New Family').'" />';
-    $page .= '</form>';
-    $page .= '</td>';
-  }*/
   
 /**
  * Render a page showing the selected family in detail
@@ -286,6 +276,9 @@ function addressbook_family_view( )  {
 	// *****************************
 	
 	$fid=$_POST["fid"];
+	if ($fid=="") {
+		$fid=$_SESSION["fid"];
+	}
 	
 	// *****************************
 	// Query Database
@@ -443,8 +436,6 @@ function addressbook_family_view( )  {
  */
 function addressbook_family_edit()  {
 
-	global $user;
-
 	// *****************************
 	// Get posted Inputs
 	// *****************************
@@ -513,6 +504,9 @@ function addressbook_family_edit()  {
 		$country=htmlentities($_POST['country']);
 	} else {
 		$country=$data->country;
+	}
+	if ($fid==0) {
+		$country=variable_get('addressbook_country', 'Nederland');
 	}
 	
 	if ( isset($_POST["telephone"]) ) {
@@ -611,12 +605,14 @@ function addressbook_family_edit()  {
 
 	// Menu bar
 	if ($fid==0) {
-		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyInsert',t('Save'));
+		$page .= addressbook_hiddenlink('AddressbookForm','',0,'FamilyInsert',t('Save'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','',0,'FamilyList',t('Cancel'));
 	} else {
 		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyUpdate',t('Save'));
 		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Delete'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
 	}
-	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
+	
 	
 	$page .= '</fieldset>';	
 	
@@ -639,26 +635,14 @@ function addressbook_family_insert() {
 	// *****************************
 	// Get posted Inputs
 	// *****************************
-	
-	$fid=htmlentities($_POST["fid"]);
-	
+		
 	$middle_name=htmlentities($_POST['middle_name']);
-	
 	$last_name=htmlentities(ucfirst($_POST['last_name']));
-	
 	$street=htmlentities(ucfirst($_POST['street']));
-	
 	$zipcode=htmlentities($_POST['zipcode']);
-	
 	$city=htmlentities(ucfirst($_POST['city']));
-	
 	$country=htmlentities($_POST['country']);
-	if ($country=='') {
-		$country=variable_get('addressbook_country', 'Nederland');
-	}
-
 	$telephone=htmlentities($_POST['telephone']);
-
 	$owner=htmlentities($_POST['owner']);
 	
 	// *****************************
@@ -694,7 +678,7 @@ function addressbook_family_insert() {
 	$fid = $tmp->fid;
 	
 	$_SESSION['fid']=$fid;
-	
+		
 	// *****************************
 	// create message
 	// *****************************
@@ -706,7 +690,7 @@ function addressbook_family_insert() {
 		
 		return 0;
 	} 
-	
+		
 	return 1;
 }
 

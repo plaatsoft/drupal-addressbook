@@ -27,7 +27,61 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+// *********************************************************************************
+// StateMachine
+// *********************************************************************************
  
+function addressbook_member($PrsId=0) {
+
+	echo var_dump($_POST);
+	
+	// *****************************
+	// Process POST an SESSION variables
+	// *****************************
+	
+	$Action=htmlentities($_POST['Action']);
+	
+	// *****************************
+	// Process statemachine
+	// *****************************
+	
+	switch ($Action) {
+   
+		case 'MemberList':
+			$page = addressbook_member_list();
+			break;
+			
+		case 'FamilyView':
+			$page = addressbook_family_view();
+			break;
+			
+		case 'FamilyEdit':
+			$page = addressbook_family_edit();
+			break;
+			
+		case 'FamilyInsert':
+			addressbook_family_insert();
+			$page = addressbook_family_view();
+			break;
+			
+		case 'FamilyUpdate':
+			addressbook_family_update();
+			$page = addressbook_family_view();
+			break;
+			
+		case 'FamilyDelete':
+			addressbook_family_delete();
+			$page = addressbook_family_list();
+			break;
+			
+		default: 
+			$page = addressbook_member_list();
+			break;
+	}
+	print theme("page", $page);
+}
+
 // ************************************
 // Views
 // ************************************
@@ -36,35 +90,78 @@
  * Render a page showing the selected address for editing
  * @return HTML
  */
-function member_list( $sort='' )  {
+function addressbook_member_list( $sort='' )  {
 
-  global $user;
-  $page = '<div class="addressbook">';
+	// *****************************
+	// Get posted variables
+	// *****************************
+	
+   $Sort = $_POST["Sort"];
+	if ($Sort=="") {
+		$Sort=$_SESSION["Sort"];
+		if ($Sort=="") {
+			$Sort="A";
+		}
+	}
+	$_SESSION["Sort"]=$Sort;
 
-  drupal_set_title(t('Addressbook family member list') );
+	$Search=$_POST["Search"];
 
-  // Validate HTTP URL parameter
-  if ( strlen($sort)>1 )
-  {
-     return hacker_warning();
-  }
-
-  $_SESSION["sort"]=$sort;
-
-  // Save list name in session scope
-  $_SESSION["list"]='member';
-
-  $role = isset($_POST['roles']) ? $_POST['roles'] : '0';
-  if ($role=='0') {
-    $role=$_SESSION["role"];
-  }
-  else {
-    $_SESSION["role"]=$role;
-  }
+	$role = isset($_POST['roles']) ? $_POST['roles'] : '0';
+	if ($role=='0') {
+		$role=$_SESSION["role"];
+	} else {
+		$_SESSION["role"]=$role;
+	}
 
   if (isset($_POST['role_type'])) {
-    $_SESSION["role_type"]=$_POST['role_type'];
+		$_SESSION["role_type"]=$_POST['role_type'];
   }
+  
+	// *****************************
+	// Query Database
+	// *****************************
+	
+	if ($Search!="") {
+		$parameter=$Search;
+	} else {
+	   $parameter=$Sort;
+	}
+	
+	// Fetch member from database
+  $query  = '
+		SELECT 
+			first_name, 
+			middle_name, 
+			last_name, 
+			mobile, 
+			email, 
+			mid, 
+			fid, 
+			uid, 
+			(SELECT telephone FROM {addressbook_family} WHERE fid=addressbook_member.fid) telephone 
+		FROM 
+			{addressbook_member}
+		WHERE 
+			last_name LIKE "'.$parameter.'%" ';
+  
+	if ($role!='') {
+		if ($_SESSION['role_type']=='active') {
+			$query .= 'AND active_roles LIKE "%'.$role.'%" ';
+		} else {
+			$query .= 'AND wanted_roles LIKE "%'.$role.'%" ';
+		}
+	}
+	$query .= 'ORDER BY last_name, middle_name ';
+	$queryResult = db_query($query);
+
+	// *****************************
+	// View
+	// *****************************
+		
+  $page = '<div class="addressbook">';
+
+  drupal_set_title(t('Addressbook member list') );  
 
   // Filter on Role
   $i=0;
@@ -138,23 +235,7 @@ function member_list( $sort='' )  {
   $page .= '</table>';
 
 
-  // Fetch member from database
-  $query  = 'SELECT first_name, middle_name, last_name, mobile, email, mid, fid, uid, ';
-  $query .= '(SELECT telephone FROM {addressbook_family} WHERE fid=addressbook_member.fid) telephone ';
-  $query .= 'FROM {addressbook_member} ';
-  $query .= 'WHERE last_name LIKE "'.$sort.'%" ';
-  if ($role!='') {
-    if ($_SESSION['role_type']=='active') {
-      $query .= 'AND active_roles LIKE "%'.$role.'%" ';
-    }
-    else {
-      $query .= 'AND wanted_roles LIKE "%'.$role.'%" ';
-    }
-  }
-  $query .= 'ORDER BY last_name, middle_name ';
-  //$page .= $query;
-  $queryResult = db_query($query);
-
+  
   //$page .= '<br/>';
   $page .= '<table width=100% border=1 cellpadding=3 cellspacing=3>';
 
@@ -248,25 +329,20 @@ function member_list( $sort='' )  {
   $page .= '</table>';
 
   $page .= '</div>';
-  print theme("page", $page);
+  
+  print $page;
 }
 
 /**
  * Render a page showing the selected member in readonly mode
  * @return HTML
  */
-function member_view( $mid=0 )  {
+function addressbook_member_view( $mid=0 )  {
 
-  global $user;
+ 
   $page = '<div class="addressbook">';
 
   drupal_set_title(t('Addressbook view family member') );
-
-  // Validate HTTP URL parameter
-  if ( !check_number($mid) )
-  {
-     return hacker_warning();
-  }
 
   // Save mid in session scope
   $_SESSION["mid"]=$mid;
@@ -441,7 +517,7 @@ function member_view( $mid=0 )  {
   print theme("page", $page);
 }
 
-function email_view( $sort='') 
+function addressbook_email_view( $sort='') 
 {
   global $user;
   $page = '<div class="addressbook">';
@@ -538,7 +614,7 @@ function email_view( $sort='')
  * Render a page showing the selected member in edit mode
  * @return HTML
  */
-function member_edit( $mid=0 )  {
+function addressbook_member_edit( $mid=0 )  {
 
   global $user;
   $page = '<div class="addressbook">';
@@ -988,7 +1064,7 @@ function member_edit( $mid=0 )  {
  * insert member SQL function
  * @return true of false
  */
-function insert_member( $first_name, $middle_name, $last_name, $birth_day, $mobile, $email, $notes, $work, $active_roles, $wanted_roles, $fid, $owner ) {
+function addressbook_insert_member( $first_name, $middle_name, $last_name, $birth_day, $mobile, $email, $notes, $work, $active_roles, $wanted_roles, $fid, $owner ) {
 
   $query  = 'INSERT INTO addressbook_member (first_name, middle_name, last_name, ';
   $query .= 'birth_day, mobile, email, notes, work, active_roles, wanted_roles, uid, fid, last_updated) VALUES (';
@@ -1023,7 +1099,7 @@ function insert_member( $first_name, $middle_name, $last_name, $birth_day, $mobi
  * update member SQl function
  * @return true of false
  */
-function update_member($first_name, $middle_name, $last_name, $birth_day, $mobile, $email, $notes, $work, $active_roles, $wanted_roles, $owner, $fid, $mid) {
+function addressbook_update_member($first_name, $middle_name, $last_name, $birth_day, $mobile, $email, $notes, $work, $active_roles, $wanted_roles, $owner, $fid, $mid) {
 
   $query = 'UPDATE addressbook_member SET ';
   $query .= 'first_name = "'.$first_name.'",';

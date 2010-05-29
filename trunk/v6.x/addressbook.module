@@ -36,23 +36,15 @@
 define('ADDRESSBOOK_VERSION' ,'4.0');
 
 // Addressbook module URLs.
-define('URL_ADDRESSBOOK',  'addressbook');
-define('URL_FAMILY_LIST',  'addressbook/family/list');
-define('URL_FAMILY_VIEW',  'addressbook/family/view');
-define('URL_FAMILY_EDIT',  'addressbook/family/edit');
-define('URL_MEMBER_LIST',  'addressbook/member/list');
-define('URL_MEMBER_VIEW',  'addressbook/member/view');
-define('URL_MEMBER_EDIT',  'addressbook/member/edit');
-define('URL_PICTURE_VIEW', 'addressbook/picture/view');
-define('URL_PICTURE_EDIT', 'addressbook/picture/edit');
-define('URL_UPLOAD_CSV',   'addressbook/csv/upload');
-define('URL_DOWNLOAD_CSV', 'addressbook/csv/download');
-define('URL_SEARCH',       'addressbook/search');
-define('URL_MAP_VIEW',     'addressbook/map/view');
-define('URL_EMAIL',        'addressbook/email');
+define('URL_ADDRESSBOOK',              'addressbook');
+define('URL_ADDRESSBOOK_FAMILY',       'addressbook/family');
+define('URL_ADDRESSBOOK_MEMBER',       'addressbook/member');
+define('URL_ADDRESSBOOK_UPLOAD_CSV',   'addressbook/csv/upload');
+define('URL_ADDRESSBOOK_DOWNLOAD_CSV', 'addressbook/csv/download');
+define('URL_ADDRESSBOOK_EMAIL',        'addressbook/email');
 
-define('IMAGE_DIR',        file_directory_path().'/addressbook');
-define('THUMBNAILS_DIR',   file_directory_path().'/addressbook/thumbnails');
+define('ADDRESSBOOK_IMAGE_DIR',        file_directory_path().'/addressbook');
+define('ADDRESSBOOK_THUMBNAILS_DIR',   file_directory_path().'/addressbook/thumbnails');
 
 // ##################################################################################
 // Load all php, js and css files
@@ -119,93 +111,30 @@ function addressbook_menu() {
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_FAMILY_LIST] = array(
-                   'title' => 'Addressbook family list',
-                   'page callback' => 'family_list',
+  $items[URL_ADDRESSBOOK_FAMILY] = array(
+                   'title' => 'Addressbook family',
+                   'page callback' => 'addressbook_family',
                    'access arguments' => array('view addressbook'),
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_FAMILY_VIEW] = array(
-                   'title' => 'Addressbook view family',
-                   'page callback' => 'family_view2',
-                   'access arguments' => array('view addressbook'),
-                   'type' => MENU_CALLBACK,
-                );
-
-  $items[URL_FAMILY_EDIT] = array(
-                   'title' => 'Addressbook edit family',
-                   'page callback' => 'family_edit',
-                   'access arguments' => array('add address'),
-                   'type' => MENU_CALLBACK,
-                );
-
-  $items[URL_MEMBER_LIST] = array(
-                   'title' => 'Addressbook family list',
-                   'page callback' => 'member_list',
+  $items[URL_ADDRESSBOOK_MEMBER] = array(
+                   'title' => 'Addressbook member',
+                   'page callback' => 'addressbook_member',
                    'access arguments' => array('view addressbook'),
                    'type' => MENU_CALLBACK,
                         );
 
-  $items[URL_MEMBER_VIEW] = array(
-                   'title' => 'Addressbook view family member',
-                   'page callback' => 'member_view',
-                   'access arguments' => array('view addressbook'),
-                   'type' => MENU_CALLBACK,
-                        );
-
-  $items[URL_MEMBER_EDIT] = array(
-                   'title' => 'Addressbook edit family member',
-                   'page callback' => 'member_edit',
-                   'access arguments' => array('add address'),
-                   'type' => MENU_CALLBACK,
-                        );
-
-  $items[URL_PICTURE_VIEW] = array(
-                   'title' => 'Addressbook view picture',
-                   'page callback' => 'picture_view',
-                   'access arguments' => array('view addressbook'),
-                   'type' => MENU_CALLBACK,
-                );
-
-  $items[URL_PICTURE_EDIT] = array(
-                   'title' => 'Addressbook edit picture',
-                   'page callback' => 'picture_edit',
-                   'access arguments' => array('add address'),
-                   'type' => MENU_CALLBACK,
-                        );
-
-  $items[URL_UPLOAD_CSV] = array(
+  $items[URL_ADDRESSBOOK_UPLOAD_CSV] = array(
                    'title' => 'Addressbook CSV upload',
-                   'page callback' => 'upload_csv',
+                   'page callback' => 'addressbook_upload_csv',
                    'access arguments' => array('add address'),
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_DOWNLOAD_CSV] = array(
+  $items[URL_ADDRESSBOOK_DOWNLOAD_CSV] = array(
                    'title' => 'Addressbook CSV download',
-                   'page callback' => 'download_csv',
-                   'access arguments' => array('add address'),
-                   'type' => MENU_CALLBACK,
-                );
-
-   $items[URL_SEARCH] = array(
-                   'title' => 'Addressbook search',
-                   'page callback' => 'general_search',
-                   'access arguments' => array('view addressbook'),
-                   'type' => MENU_CALLBACK,
-                );
-
-   $items[URL_MAP_VIEW] = array(
-                   'title' => 'Addressbook map view',
-                   'page callback' => 'map_view',
-                   'access arguments' => array('view addressbook'),
-                   'type' => MENU_CALLBACK,
-                );
-
-   $items[URL_EMAIL] = array(
-                   'title' => 'Addressbook email view',
-                   'page callback' => 'email_view',
+                   'page callback' => 'addressbook_download_csv',
                    'access arguments' => array('add address'),
                    'type' => MENU_CALLBACK,
                 );

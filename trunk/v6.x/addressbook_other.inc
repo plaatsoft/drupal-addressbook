@@ -32,7 +32,7 @@
  * Render a page showing the picture full screen.
  * @return HTML
  */
-function picture_view( $pid=0 ) {
+function addressbook_picture_view( $pid=0 ) {
 
   global $user;
   $page = '<div class="addressbook">';
@@ -201,7 +201,7 @@ function picture_view( $pid=0 ) {
  * Render a page for uploading a picture.
  * @return HTML
  */
-function picture_edit( $mid=0 ) {
+function addressbook_picture_edit( $mid=0 ) {
 
   global $user;
   $page = '<div class="addressbook">';
@@ -467,119 +467,7 @@ function picture_edit( $mid=0 ) {
   print theme("page", $page);
 }
 
-
-/**
- * Search in database
- * return found family or family member
- */
-function general_search($search="") {
-
-  $page = '<div class="addressbook">';
-
-  drupal_set_title(t('Addressbook search'));
-
-  // Fetch search parameter out HTTP request
-  if ($search=='') $search=htmlentities($_POST['search']);
-  // Set search value in session scope
-  $_SESSION["search"]=$search;
-
-  // Filter out garbage!
-  $search=str_replace(array(',','"','(',')','[',']','%'), "", $search);
-  $search=str_replace(array('+'), " ", $search);
-
-  // If search string is empty return directly!
-  if ($search=='')
-  {
-     return family_list($_SESSION["sort"]);
-  }
-
-  // Split search string in to tokens (We only us the first and last word of the search string).
-  $value=split(' ',$search);
-  $first_name=$value[0];
-  $i=1;
-  while ($value[$i]!='')
-  {
-    $last_name=$value[$i];
-    $i++;
-  }
-
-  // Fetch member from database
-  $query  = 'SELECT mid, fid FROM {addressbook_member} ';
-  $query .= 'WHERE first_name LIKE "%'.$first_name.'%" AND last_name LIKE "%'.$last_name.'%"';
-  $queryResult = db_query($query);
-
-  // Show all found members
-  $found_count=0;
-  while ($data = db_fetch_object($queryResult))
-  {
-    $fid=$data->fid;
-    $mid=$data->mid;
-    $found_count++;
-  }
-
-  // If no family member is found try to search for matching family
-  if ($found_count==0) {
-    // If no lastname is added, firstname is lastname
-    if ($last_name=='') {
-      $last_name=$first_name;
-      $first_name='';
-    }
-
-    // Fetch member from database
-    $query  = 'SELECT fid FROM {addressbook_family} ';
-    $query .= 'WHERE last_name LIKE "%'.$last_name.'%"';
-    $queryResult = db_query($query);
-
-    // Show all found members
-    $found_count=0;
-    while ($data = db_fetch_object($queryResult))
-    {
-      $fid=$data->fid;
-      $mid=0;
-      $found_count++;
-    }
-  }
-
-  if ($found_count==0) {
-     $page .= '<br/>';
-     $page .= t('No information found').'<br/>';
-     $page .= '<br/>';
-     $page .= '<form action="'.url(URL_FAMILY_LIST).'" method="POST">';
-     $page .= '<input type="submit" value="'.t('Return').'" />';
-     $page .= '</form>';
-
-     $page .= '</div>';
-     return $page;
-  }
-  else {
-    if ($found_count>1) {
-      $page .= '<br/>';
-      $page .= t('Multiple entries found. Please make the search string more specific.').'<br/>';
-      $page .= '<br/>';
-      $page .= '<form action="'.url(URL_FAMILY_LIST).'" method="POST">';
-      $page .= '<input type="submit" value="'.t('Return').'" />';
-      $page .= '</form>';
-
-      $page .= '</div>';
-      return $page;
-    }
-    else
-    {
-      if ($mid==0) {
-         // Found family
-         family_view2($fid);
-      }
-      else
-      {
-        // Found family member
-        $_SESSION["fid"]=$fid;
-        member_view($mid);
-      }
-    }
-  }
-}
-
-function map_view() {
+function addressbook_map_view() {
 
   $page = '<div class="addressbook">';
 
