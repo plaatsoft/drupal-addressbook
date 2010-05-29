@@ -57,14 +57,14 @@ function addressbook_mainmenu() {
 	$page .= '<dl class="admin-list">';
     
 	$page .= '<dt>';
-	$page .= '<a href="'.url(URL_FAMILY_LIST).'">Find family</a>';
+	$page .= '<a href="'.url(URL_ADDRESSBOOK_FAMILY).'">Find family</a>';
 	$page .= '</dt>';
 	$page .= '<dd>';
 	$page .= t('Find family in addressbook');
 	$page .= '</dd>';
   
 	$page .= '<dt>';
-	$page .= '<a href="'.url(URL_MEMBER_LIST).'">Find member</a>';
+	$page .= '<a href="'.url(URL_ADDRESSBOOK_MEMBER).'">Find member</a>';
 	$page .= '</dt>';
 	$page .= '<dd>';
 	$page .= t('Find member in addressbook.');
@@ -78,14 +78,14 @@ function addressbook_mainmenu() {
    if (user_access('access administration pages')) {
    
 		$page .= '<dt>';
-		$page .= '<a href="'.url(URL_UPLOAD_CSV).'">Upload addressbook data</a>';
+		$page .= '<a href="'.url(URL_ADDRESSBOOK_UPLOAD_CSV).'">Upload addressbook data</a>';
 		$page .= '</dt>';
 		$page .= '<dd>';
 		$page .= t('Upload addressbook data.');
 		$page .= '</dd>';
   
 		$page .= '<dt>';
-		$page .= '<a href="'.url(URL_DOWNLOAD_CSV).'">Download addressbook data</a>';
+		$page .= '<a href="'.url(URL_ADDRESSBOOK_DOWNLOAD_CSV).'">Download addressbook data</a>';
 		$page .= '</dt>';
 		$page .= '<dd>';
 		$page .= t('Download addressbook data.');

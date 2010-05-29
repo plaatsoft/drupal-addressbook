@@ -69,7 +69,7 @@ Release Notes
 23-10-2009 v6.x-3.7
 - Hot security fix to protect against XSS (Cross Site Scripting) hacking.
 
-14-05-2010 v6.x-4.0
+29-05-2010 v6.x-4.0
 - Added main menu.
 - Splits functionality over more files.
 - Added JaveScript and CSS file
