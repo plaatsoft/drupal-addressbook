@@ -1,5 +1,3 @@
-// $Id: readme.txt,v 1.32 2009/10/27 19:01:51 wplaat Exp $
-
 Created by wplaat (Plaatsoft)
 
 This software is open source and may be copied, distributed or modified under the terms of the GNU General Public License (GPL) Version 2
@@ -30,21 +28,15 @@ The GD library must be active in the PHP Apache module, or else images will not 
 
 Installation
 ------------
-
 1. Copy the addressbook folder and its contents to the Drupal modules/ directory. 
    Drupal should automatically detect it and create the necessary database queries.
-
-2. Go to 'administer -> modules' and enable activeselect.
-
+2. Go to 'administer -> modules' and enable addressbook.
 3. Setting can be changed in 'Administer > Settings > Addressbook'
    Obtain a free www.map24.com AJAX API key, or else the map function will not work!
-
 4. Populate database with an initial CSV upload file.
    CSV must have the following format (First line of the CSV input file must be this banner line):
- 
    FIRST_NAME,MIDDLE_NAME,LAST_NAME,STREET,ZIPCODE,CITY,COUNTRY,TELEPHONE,MOBILE,EMAIL,BIRTH_DAY,WORK,NOTES,ACTIVE_ROLES,WANTED_ROLES
-
-5. Create a new drupal menu which is pointing to the following URL http://!your URL!/addressbook/family/list.
+5. Create a new drupal menu which is pointing to the following URL http://!your URL!/addressbook.
    Now you can access the addressbook by this URL.
  
 Release Notes
@@ -82,5 +74,3 @@ Known Minor Issues
 - Image is not removed when family is deleted
 - Family members are not removed when family is deleted
 - Role definitions may not contain spaces
-
- 

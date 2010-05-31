@@ -35,7 +35,7 @@
  
 function addressbook_family($PrsId=0) {
 
-	echo var_dump($_POST);
+	//echo var_dump($_POST);
 	
 	// *****************************
 	// Process POST an SESSION variables
