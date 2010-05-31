@@ -164,6 +164,8 @@ function addressbook_family_list() {
 	$page .= '<table>';
 	$page .= '<thead>';
   
+	$page .= '<tr>';
+  
 	if ( variable_get('addressbook_show_thumbnails',0)==1) {
 		$page .= '<th>';
       $page .= '<b>'.t('Picture').'<b>';
@@ -172,15 +174,19 @@ function addressbook_family_list() {
 	$page .= '<th>';
 	$page .= '<b>'.t('Name').'</b>';
 	$page .= '</th>';
+	
 	$page .= '<th>';
 	$page .= '<b>'.t('Street').'</b>';
 	$page .= '</th>';
+	
 	$page .= '<th>';
 	$page .= '<b>'.t('Zipcode').'</b>';
 	$page .= '</th>';
+	
 	$page .= '<th>';
 	$page .= '<b>'.t('City').'</b>';
 	$page .= '</th>';
+	
 	$page .= '</tr>';
 	
 	$page .= '</thead>';
