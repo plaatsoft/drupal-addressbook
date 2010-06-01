@@ -48,10 +48,23 @@ function addressbook_member($PrsId=0) {
 	
 	switch ($Action) {
    			
+		case 'MemberInsert': 
+			$page = addressbook_member_view();
+			break;
+			
+		case 'MemberUpdate': 
+			$page = addressbook_member_view();
+			break;
+		
+		case 'MemberDelete': 
+			$page = addressbook_member_view();
+			break;
+			
 		case 'MemberView': 
 			$page = addressbook_member_view();
 			break;
 			
+		case 'MemberList': 
 		default: 
 			$page = addressbook_member_list();
 			break;
@@ -304,7 +317,7 @@ function addressbook_member_view(  )  {
 	// Create page
 	// *****************************
 
-	$name=view_name($data->first_name,$data->middle_name,$data->last_name,false);
+	$name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,false);
 	list($birthday_year, $birthday_month, $birthday_day) = split('-', $data->birth_day);
 	list($year, $time) = split(' ', $data->last_updated);
 	list($access_year, $access_month, $access_day) = split('-', $year);
@@ -322,99 +335,119 @@ function addressbook_member_view(  )  {
 	$page .= '<fieldset>' ;
 	$page .= '<legend></legend>';
 
-	// View Address Information
-	$page .= '<br/>';
+	// Show this information only to admin users.
+	if ( user_access('access administration pages') ) {
+		
+		$page .= addressbook_form_item(
+		t("Owner"),
+		addressbook_view_owner($uid, $readonly),
+		t("Owner of this member"), 
+		$readonly );
+		
+		$page .= addressbook_form_item(
+		t("Last updated"),
+		addressbook_view_text("middle_name", 22, 22, $last_updated, true),
+		"", 
+		true );
+	}
 
-  $page .= '<table cellpadding=2 width=100%>';
+	$page .= addressbook_form_item(
+					t("Name"),
+					addressbook_view_text("name", 50, 50, $data->name, $readonly),
+					t("Member name"), 
+					$readonly );
+		
+	// Query Database for Pictures
+	$page .= '<td ROWSPAN=9 valign="top">';
+	$query  = 'SELECT pid, picture ';
+	$query .= 'FROM {addressbook_picture} WHERE fid="'.$fid.'" AND mid="'.$mid.'"';
+	$queryResult = db_query($query);
+	while ($data = db_fetch_object($queryResult)) {
+		// Show each picture with is found
+		$page .= '<a href="'.url(URL_PICTURE_VIEW.'/').$data->pid.'">';
+		$filename=url(THUMBNAILS_DIR.'/'.$data->picture);
+		$filename=str_replace(array("?q="), "", $filename);
+		$page.='<img align="right" src="'.$filename.'"/>';
+	}
+	$page .= '<tr>';
 
-  // Show this information only to admin users.
-  if ( user_access('access administration pages') ) {
-     $page .= view_owner($uid,'1');
-     $page .= view_line(t('Last updated'),'<input id="text" name="last_updated" size="22" type="text" value="'.$last_updated.'" READONLY />');
-  }
+	$page .= addressbook_form_item(
+					t("Street"),
+					addressbook_view_text("street", 50, 50, $data->street, $readonly),
+					t("Street name"), 
+					$readonly );
+		
+	$page .= addressbook_form_item(
+					t("Zipcode"),
+					addressbook_view_text("zipcode", 8, 8, $data->zipcode, $readonly),
+					t("Zipcode of member"), 
+					$readonly );
 
-  $page .= '<tr><td valign="top" width=15%>';
-  $page .= t('Name');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="name" size="50" type="text" value="'.$name.'" READONLY />';
-  $page .= '</td>';
+	$page .= addressbook_form_item(
+					t("Zipcode"),
+					addressbook_view_text("city", 50, 50, $data->city, $readonly),
+					t("City of member"), 
+					$readonly );
+					
+	$page .= addressbook_form_item(
+					t("Country"),
+					addressbook_view_country($data->country, $readonly),
+					t("Country of member"), 
+					$readonly );
 
-  // Query Database for Pictures
-  $page .= '<td ROWSPAN=9 valign="top">';
-  $query  = 'SELECT pid, picture ';
-  $query .= 'FROM {addressbook_picture} WHERE fid="'.$fid.'" AND mid="'.$mid.'"';
-  $queryResult = db_query($query);
-  while ($data = db_fetch_object($queryResult))
-  {
-    // Show each picture with is found
-    $page .= '<a href="'.url(URL_PICTURE_VIEW.'/').$data->pid.'">';
-    $filename=url(THUMBNAILS_DIR.'/'.$data->picture);
-    $filename=str_replace(array("?q="), "", $filename);
-    $page.='<img align="right" src="'.$filename.'"/>';
-  }
-  $page .= '<tr>';
+	$page .= addressbook_form_item(
+					t("Telephone"),
+					addressbook_view_text("telephone", 16, 16, $data->telephone, $readonly),
+					t("Telephone number of member"), 
+					$readonly );
+					
+	$page .= addressbook_form_item(
+					t("Mobile"),
+					addressbook_view_text("mobile", 16, 16, $data->mobile, $readonly),
+					t("Mobile number of member"), 
+					$readonly );
+					
+	$page .= addressbook_form_item(
+					t("Email"),
+					addressbook_view_text("email", 50, 50, $data->email, $readonly),
+					t("Mobile number of member"), 
+					$readonly );
+					
+	$page .= addressbook_form_item(
+					t("Birthday"),
+					addressbook_view_birthday($birthday_day,$birthday_month,$birthday_year, $readonly),
+					t("Birtday of member"), 
+					$readonly );
+					
+	$page .= addressbook_form_item(
+					t("Work"),
+					addressbook_view_textarea('work', 55, 4, 512, $data->work, $readonly),
+					t("Work notes"), 
+					$readonly );
+					
+	$page .= addressbook_form_item(
+					t("Notes"),
+					addressbook_view_textarea('notes', 55, 4, 512, $data->notes, $readonly),
+					t("General notes"), 
+					$readonly );
 
-  $page .= '<tr><td valign="top">';
-  $page .= t('Street');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="street" size="50" maxlength="50" type="text" value="'.$data2->street.'" READONLY />';
-  $page .= '</td></tr>';
+	$page .= addressbook_view_roles($active_roles,$wanted_roles, '1');
 
-  $page .= '<tr><td valign="top">';
-  $page .= t('Zipcode');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="zipcode" size="8" maxlength="8" type="text" value="'.$data2->zipcode.'" READONLY />';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('City');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="city" size="50" maxlength="50" type="text" value="'.$data2->city.'" READONLY />';
-  $page .= '</td></tr>';
-
-  $page .= view_country($data2->country, '1');
-
-  $page .= '<tr><td valign="top">';
-  $page .= t('Telephone');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="telephone" size="16" maxlength="16" type="text" value="'.$data2->telephone.'" READONLY />';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top" width=15%>';
-  $page .= t('Mobile');
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="mobile" size="16" type="text" value="'.$mobile.'" READONLY />';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top" width=15%>';
-  $page .= l(t('Email'),'mailto:'.$email);
-  $page .= '</td><td>';
-  $page .= '<input id="text" name="email" size="50" type="text" value="'.$email.'" READONLY />';
-  $page .= '</td></tr>';
-
-  $page .= view_birthday($birthday_day,$birthday_month,$birthday_year,'1');
-
-  $page .= '<tr><td valign="top" width=15%>';
-  $page .= t('Work');
-  $page .= '</td><td COLSPAN=2>';
-  $page .= '<textarea id="work" cols=55 rows=4 name="work" READONLY >'.$work.'</textarea>';
-  $page .= '</td></tr>';
-
-  $page .= '<tr><td valign="top" width=15%>';
-  $page .= t('Notes');
-  $page .= '</td><td COLSPAN=2>';
-  $page .= '<textarea id="notes" cols=55 rows=4 name="notes" READONLY >'.$notes.'</textarea>';
-  $page .= '</td></tr>';
-  $page .= '</table>';
-
-  $page .= view_roles($active_roles,$wanted_roles, '1');
+	$page .= '</fieldset>' ;
 
   // Show menu Bar
-  $page .= '<br/>';
-  $page .= '<table align="left">';
-  $page .= '<tr>';
-
-  if (variable_get('addressbook_map_link',0)==1) {
+  // Menu bar
+	if ($mid==0) {
+		$page .= addressbook_hiddenlink('AddressbookForm','',0,'MemberInsert',t('Save'));
+	} else {
+		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'MemberUpdate',t('Save'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'MemberDelete',t('Delete'));
+	}
+	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','',0,'MemberList',t('Cancel'));
+	
+	
+ 
+   /*if (variable_get('addressbook_map_link',0)==1) {
     $page .= '<td valign="top">';
     $page .= '<form action="'.url(URL_MAP_VIEW).'" method="POST">';
     $page .= '<input type="hidden" name="street" value="'.$data2->street.'" />';
@@ -425,27 +458,12 @@ function addressbook_member_view(  )  {
     $page .= '<input type="submit" value="'.t('Go to Map').'" />';
     $page .= '</form>';
     $page .= '</td>';
-  }
-
-  $page .= '<td valign="top">';
-  if ($_SESSION["list"]=='member') {
-     $page .= '<form action="'.url(URL_MEMBER_LIST.'/'.$_SESSION["sort"]).'" method="POST">';
-  }
-  else {
-     $page .= '<form action="'.url(URL_FAMILY_VIEW.'/').$fid.'" method="POST">';
-  }
-  $page .= '<input type="submit" name="commit" value="'.t('Return').'" />';
-  $page .= '</form>';
-  $page .= '</td>';
+  }*/
 
 
-  $page .= '</tr>';
-  $page .= '</table>';
 
-  $page .= '<br/>';
-  $page .= '<br/>';
-
-  $page .= '</div>';
+	$page .= '</div>';
+	$page .= '</form>';
  
 	return $page;
 }

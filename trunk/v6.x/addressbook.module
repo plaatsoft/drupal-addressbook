@@ -373,7 +373,7 @@ function addressbook_block($op='list', $delta=0) {
         list($year, $month, $day) = split('[/.-]', $data->birth_day);
         $user_age  = date('Y')-$year;
 
-        $name=view_name($data->first_name,$data->middle_name,$data->last_name,true,false,true);
+        $name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,true,false,true);
         $block_content .= l( $name.' ['.$user_age.'] ',URL_MEMBER_VIEW.'/'.$data->mid) . '<br />';
       }
     }

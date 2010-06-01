@@ -628,6 +628,106 @@ function addressbook_family_edit()  {
 	return $page;
 }
 
+
+function addressbook_map_view() {
+
+  $page = '<div class="addressbook">';
+
+  drupal_set_title(t('Addressbook map view'));
+
+  // Fetch search parameter out HTTP request
+  $street=htmlentities($_POST['street']);
+  $city=htmlentities($_POST['city']);
+  $country=htmlentities($_POST['country']);
+  $fid=htmlentities($_POST['fid']);
+  $mid=htmlentities($_POST['mid']);
+
+  drupal_set_html_head('');
+  drupal_set_html_head('<script type=\'text/javascript\' src=\'http://api.map24.com/ajax/1.2/?init=default\'></script>');
+  drupal_set_html_head('<script type=\'text/javascript\'>');
+  drupal_set_html_head('var map = null;');
+
+  drupal_set_html_head('function goMap24() {');
+  drupal_set_html_head('var mrcContainer = new Map24.Webservices.Request.MapletRemoteControl(map);');
+
+  drupal_set_html_head('map = Map24.Webservices.getMap24Application({');
+  drupal_set_html_head('AppKey: "'.variable_get('addressbook_map_key', '').'",');
+  drupal_set_html_head('MapArea: document.getElementById( "maparea" ),');
+  drupal_set_html_head('Maptype: "JAVA",');
+  drupal_set_html_head('MapWidth: 640,');
+  drupal_set_html_head('MapHeight: 480,');
+  drupal_set_html_head('MRC: mrcContainer');
+  drupal_set_html_head('});');
+  drupal_set_html_head('geocode(\''.$street.','.$city.','.$country.'\')');
+  drupal_set_html_head('}');
+
+  drupal_set_html_head('function geocode( addressString ){');
+  drupal_set_html_head('map.Webservices.sendRequest(');
+  drupal_set_html_head('new Map24.Webservices.Request.MapSearchFree(map, {');
+  drupal_set_html_head('SearchText: addressString,');
+  drupal_set_html_head('MaxNoOfAlternatives: 50');
+  drupal_set_html_head('})');
+  drupal_set_html_head(');');
+
+  drupal_set_html_head('map.onMapSearchFree = function( event ){');
+  drupal_set_html_head('var mrcContainer = new Map24.Webservices.Request.MapletRemoteControl( map );');
+  drupal_set_html_head('var firstResult = event.Alternatives[0];');
+  drupal_set_html_head('var lon = firstResult.Coordinate.Longitude;');
+  drupal_set_html_head('var lat = firstResult.Coordinate.Latitude;');
+
+  drupal_set_html_head('mrcContainer.push(');
+  drupal_set_html_head('new Map24.Webservices.MRC.SetMapView({');
+  drupal_set_html_head('Coordinates: new Map24.Coordinate( lon, lat ),');
+  drupal_set_html_head('ClippingWidth: new Map24.Webservices.ClippingWidth(');
+  drupal_set_html_head('{ MinimumWidth: 250 }');
+  drupal_set_html_head(')');
+  drupal_set_html_head('})');
+  drupal_set_html_head(');');
+  drupal_set_html_head('map.Webservices.sendRequest( mrcContainer );');
+  drupal_set_html_head('}');
+  drupal_set_html_head('}');
+
+  drupal_set_html_head('</script>');
+
+  $page.='<body onload=\'goMap24()\'>';
+
+   // Show menu Bar
+  $page .= '<br/>';
+  $page .= '<table width="100%" border=0>';
+  $page .= '<tr>';
+
+  $page .= '<td valign="left">';
+  $page .= '<b>'.t('Address: ').$street.', '.$city.', '.$country.'</b>';
+  $page .= '</td>';
+
+  $page .= '<td  valign="right">';
+  $page.=' <input type="submit" value="'.t('Find Address').'" onclick="return geocode(\''.$street.','.$city.','.$country.'\')">';
+  $page .= '</td>';
+
+  $page .= '<td valign="right">';
+  if ($mid=='') {
+     $page .= '<form action="'.url(URL_FAMILY_VIEW.'/'.$fid).'" method="POST">';
+  }
+  else {
+     $page .= '<form action="'.url(URL_MEMBER_VIEW.'/'.$mid).'" method="POST">';
+     $page .= '<input type="hidden" name="fid" value="'.$fid.'" />';
+  }
+  $page .= '<input type="submit" name="commit" value="'.t('Return').'" />';
+  $page .= '</form>';
+  $page .= '</td>';
+
+  $page .= '</tr>';
+  $page .= '</table>';
+
+  $page .= '<br/>';
+  $page .= '<div id="maparea"></div>';
+  $page .= '</body>';
+
+  $page .= '</div>';
+  
+  return $page;
+}
+
 // *********************************************************************************
 // Database functions
 // *********************************************************************************
