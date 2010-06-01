@@ -67,6 +67,7 @@ Release Notes
 - Added JaveScript and CSS file
 - Rebuild family page from cratch.
 - Added HTML based on active drupal template.
+- Rebuild member page from cratch.
  
 Known Minor Issues
 ------------------
