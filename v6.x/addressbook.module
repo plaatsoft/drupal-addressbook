@@ -55,9 +55,7 @@ module_load_include('inc', 'addressbook', 'addressbook_utils');
 module_load_include('inc', 'addressbook', 'addressbook_mainmenu');
 module_load_include('inc', 'addressbook', 'addressbook_family');
 module_load_include('inc', 'addressbook', 'addressbook_member');
-module_load_include('inc', 'addressbook', 'addressbook_utils');
 module_load_include('inc', 'addressbook', 'addressbook_csv');
-module_load_include('inc', 'addressbook', 'addressbook_other');
 
 // ADD Java Scripts files
 drupal_add_js(drupal_get_path('module', 'addressbook'). '/js/addressbook.js');
