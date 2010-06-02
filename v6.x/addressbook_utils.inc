@@ -28,6 +28,41 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+// ********************************************
+// Debug methods
+// ********************************************
+
+/**
+ * debug_param
+ * Print on screen POSTED parameters
+ */
+function addressbook_debug_param($id, $param) {
+	echo '['.$id.'='.$param.']';
+}
+
+/**
+ * debug_param
+ * Print on screen SQL commands
+ */
+function addressbook_debug_sql($sql) {
+	echo '[Query='.$sql.']';
+}
+
+
+function addressbook_show_array($array) {
+    foreach ($array as $value) {
+        if (is_array($value)) {
+            show_array($value);
+        } else {
+            echo $value . "<br>";
+        }
+    }
+}
+
+// ********************************************
+// Debug methods
+// ********************************************
+
 function addressbook_view_timestamp($last_updated) {
 
 	if ($last_updated!="") {
@@ -147,8 +182,10 @@ function addressbook_view_name($first_name,$middle_name,$last_name,$short) {
  * @ birthday_year
  * @ return HTML
  */
-function addressbook_view_birthday($birthday_day,$birthday_month,$birthday_year,$readonly) {
+function addressbook_view_birthday($birthday,$readonly) {
 
+	list($birthday_year, $birthday_month, $birthday_day) = split('-', $birthday);
+	
    if ( !$readonly ) {
 	
 		$page.='<select name="birthday_day">';
@@ -181,7 +218,7 @@ function addressbook_view_birthday($birthday_day,$birthday_month,$birthday_year,
    
 	} else {
      
-		$page .= $birtday .= $birthday_day.'-'.$birthday_month.'-'.$birthday_year;
+		$page .= $birthday_day.'-'.$birthday_month.'-'.$birthday_year;
    }
    return $page;
 }
@@ -209,7 +246,7 @@ function addressbook_view_owner($uid, $readonly) {
         if ($tmp->uid==$uid) $page.='selected="selected" ';
         $page.='>'.$tmp->name.'</option>';
      }
-     $page.='<option value="'.t('No owner').'" ';
+     $page.='<option value="0" ';
      if ($uid==0) $page.='selected="selected" ';
      $page.='>'.t('No owner').'</option>';
      $page.='</select>';
@@ -389,6 +426,25 @@ function addressbook_view_country($country, $readonly) {
    }
    return $page;
 }
+
+// ********************************************
+// Other
+// ********************************************
+
+/**
+ * View Date Reverse type
+ */
+function addressbook_convert_date_reverse($date) { 
+
+  $page = "";
+  
+  if ($date!="") {
+		list($day, $month, $year) = split('[/.-]', $date);
+		$page = $year.'-'.$month.'-'.$day;
+  }
+  return $page;
+}
+
 
 /*
  * Function valid email address
@@ -874,3 +930,7 @@ function addressbook_picture_edit( $mid=0 ) {
   $page .= '</div>';
   print theme("page", $page);
 }
+
+// ********************************************
+// The end
+// ********************************************

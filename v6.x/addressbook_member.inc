@@ -49,19 +49,26 @@ function addressbook_member($PrsId=0) {
 	switch ($Action) {
    			
 		case 'MemberInsert': 
-			$page = addressbook_member_view();
+			addressbook_insert_member();
+			$page = addressbook_member_view(true);
 			break;
 			
 		case 'MemberUpdate': 
-			$page = addressbook_member_view();
+			addressbook_update_member();
+			$page = addressbook_member_view(true);
 			break;
 		
 		case 'MemberDelete': 
-			$page = addressbook_member_view();
+			addressbook_delete_member();
+			$page = addressbook_member_list();
+			break;
+		
+		case 'MemberEdit': 
+			$page = addressbook_member_view(false);
 			break;
 			
 		case 'MemberView': 
-			$page = addressbook_member_view();
+			$page = addressbook_member_view(true);
 			break;
 			
 		case 'MemberList': 
@@ -217,7 +224,7 @@ function addressbook_member_list( $sort='' )  {
 			$page_tmp .= '<td>';
 			if ($tmp!=null) {
 				// Show each picture with is found
-				if ( check_access($data->uid) ) {
+				if ( addressbook_check_access($data->uid) ) {
 					$page_tmp .= '<a href="'.url(URL_MEMBER_EDIT.'/').$data->mid.'">';
 				} else {
 					$page_tmp .= '<a href="'.url(URL_MEMBER_VIEW.'/').$data->mid.'">';
@@ -231,7 +238,7 @@ function addressbook_member_list( $sort='' )  {
      
 		// Format Name
 		$page_tmp .= '<td>';
-		$name=view_name($data->first_name,$data->middle_name,$data->last_name,true);
+		$name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,true);
 		$page_tmp .= oostpoort_hiddenlink('AddressbookForm', 'mid', $data->mid, 'MemberView', $name);
 		$page_tmp .= '</td>';
 		
@@ -268,7 +275,7 @@ function addressbook_member_list( $sort='' )  {
  * Render a page showing the selected member in readonly mode
  * @return HTML
  */
-function addressbook_member_view(  )  {
+function addressbook_member_view( $readonly=true )  {
 
 	// *****************************
 	// Get posted Inputs
@@ -298,7 +305,7 @@ function addressbook_member_view(  )  {
 			a.wanted_roles as wanted_roles, 
 			a.uid as uid, 
 			a.fid as fid, 
-			a.last_updated as last_updated
+			a.last_updated as last_updated,
 			b.street as street, 
 			b.zipcode as zipcode, 
 			b.city as city, 
@@ -308,7 +315,7 @@ function addressbook_member_view(  )  {
 			addressbook_member a, addressbook_family b
 		WHERE 
 			b.fid=a.fid and
-			mid='.$mid;
+			a.mid='.$mid;
 		
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
@@ -316,14 +323,6 @@ function addressbook_member_view(  )  {
 	// *****************************
 	// Create page
 	// *****************************
-
-	$name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,false);
-	list($birthday_year, $birthday_month, $birthday_day) = split('-', $data->birth_day);
-	list($year, $time) = split(' ', $data->last_updated);
-	list($access_year, $access_month, $access_day) = split('-', $year);
-	list($access_hour, $access_minute, $access_sec) = split(':', $time);
-	$last_updated=$access_day.'-'.$access_month.'-'.$access_year.' '.
-							$access_hour.':'.$access_minute.':'.$access_sec;
 
 	drupal_set_title(t('Addressbook member view') );
 
@@ -333,100 +332,86 @@ function addressbook_member_view(  )  {
 	//addressbook_save_picture("fid",$fid);
 						
 	$page .= '<fieldset>' ;
-	$page .= '<legend></legend>';
 
 	// Show this information only to admin users.
 	if ( user_access('access administration pages') ) {
 		
+		list($year, $time) = split(' ', $data->last_updated);
+		list($access_year, $access_month, $access_day) = split('-', $year);
+		list($access_hour, $access_minute, $access_sec) = split(':', $time);
+		$last_updated=$access_day.'-'.$access_month.'-'.$access_year.' '.$access_hour.':'.$access_minute.':'.$access_sec;
+
 		$page .= addressbook_form_item(
-		t("Owner"),
-		addressbook_view_owner($uid, $readonly),
-		t("Owner of this member"), 
-		$readonly );
+			t("Last updated:"),
+			addressbook_view_text("last_updated", 22, 22, $last_updated, true),
+			"", 
+			true );
 		
 		$page .= addressbook_form_item(
-		t("Last updated"),
-		addressbook_view_text("middle_name", 22, 22, $last_updated, true),
-		"", 
-		true );
+			t("Owner:"),
+			addressbook_view_owner($data->uid, $readonly),
+			t("Drupal owner of this member"), 
+			$readonly );
 	}
 
-	$page .= addressbook_form_item(
-					t("Name"),
-					addressbook_view_text("name", 50, 50, $data->name, $readonly),
-					t("Member name"), 
-					$readonly );
-		
 	// Query Database for Pictures
-	$page .= '<td ROWSPAN=9 valign="top">';
+	/*$page .= '<td ROWSPAN=9 valign="top">';
 	$query  = 'SELECT pid, picture ';
-	$query .= 'FROM {addressbook_picture} WHERE fid="'.$fid.'" AND mid="'.$mid.'"';
+	$query .= 'FROM {addressbook_picture} WHERE fid="'.$data->fid.'" AND mid="'.$mid.'"';
 	$queryResult = db_query($query);
-	while ($data = db_fetch_object($queryResult)) {
+	while ($data2 = db_fetch_object($queryResult)) {
 		// Show each picture with is found
-		$page .= '<a href="'.url(URL_PICTURE_VIEW.'/').$data->pid.'">';
-		$filename=url(THUMBNAILS_DIR.'/'.$data->picture);
+		$page .= '<a href="'.url(URL_PICTURE_VIEW.'/').$data2->pid.'">';
+		$filename=url(THUMBNAILS_DIR.'/'.$data2->picture);
 		$filename=str_replace(array("?q="), "", $filename);
 		$page.='<img align="right" src="'.$filename.'"/>';
 	}
-	$page .= '<tr>';
-
+	$page .= '</td>';*/
+	
 	$page .= addressbook_form_item(
-					t("Street"),
-					addressbook_view_text("street", 50, 50, $data->street, $readonly),
-					t("Street name"), 
-					$readonly );
-		
-	$page .= addressbook_form_item(
-					t("Zipcode"),
-					addressbook_view_text("zipcode", 8, 8, $data->zipcode, $readonly),
-					t("Zipcode of member"), 
-					$readonly );
-
-	$page .= addressbook_form_item(
-					t("Zipcode"),
-					addressbook_view_text("city", 50, 50, $data->city, $readonly),
-					t("City of member"), 
+					t("First Name:"),
+					addressbook_view_text("first_name", 50, 50, $data->first_name, $readonly),
+					t("First Name of member"), 
 					$readonly );
 					
 	$page .= addressbook_form_item(
-					t("Country"),
-					addressbook_view_country($data->country, $readonly),
-					t("Country of member"), 
-					$readonly );
-
-	$page .= addressbook_form_item(
-					t("Telephone"),
-					addressbook_view_text("telephone", 16, 16, $data->telephone, $readonly),
-					t("Telephone number of member"), 
+					t("Middle Name:"),
+					addressbook_view_text("middle_name", 10, 10, $data->middle_name, $readonly),
+					t("Middle Name of member"), 
 					$readonly );
 					
 	$page .= addressbook_form_item(
-					t("Mobile"),
+					t("Last Name:"),
+					addressbook_view_text("last_name", 50, 50, $data->last_name, $readonly),
+					t("Last Name of member"), 
+					$readonly );
+						
+	$page .= addressbook_form_item(
+					t("Mobile:"),
 					addressbook_view_text("mobile", 16, 16, $data->mobile, $readonly),
 					t("Mobile number of member"), 
 					$readonly );
 					
 	$page .= addressbook_form_item(
-					t("Email"),
+					t("Email:"),
 					addressbook_view_text("email", 50, 50, $data->email, $readonly),
 					t("Mobile number of member"), 
 					$readonly );
 					
 	$page .= addressbook_form_item(
-					t("Birthday"),
-					addressbook_view_birthday($birthday_day,$birthday_month,$birthday_year, $readonly),
+					t("Birthday:"),
+					addressbook_view_birthday($data->birth_day, $readonly),
 					t("Birtday of member"), 
 					$readonly );
 					
 	$page .= addressbook_form_item(
-					t("Work"),
+					t("Work:"),
 					addressbook_view_textarea('work', 55, 4, 512, $data->work, $readonly),
 					t("Work notes"), 
 					$readonly );
 					
 	$page .= addressbook_form_item(
-					t("Notes"),
+					t("Notes:"),
 					addressbook_view_textarea('notes', 55, 4, 512, $data->notes, $readonly),
 					t("General notes"), 
 					$readonly );
@@ -435,18 +420,23 @@ function addressbook_member_view(  )  {
 
 	$page .= '</fieldset>' ;
 
-  // Show menu Bar
-  // Menu bar
-	if ($mid==0) {
-		$page .= addressbook_hiddenlink('AddressbookForm','',0,'MemberInsert',t('Save'));
+	// *****************************
+	// Create Menu Bar
+	// *****************************
+
+	if ($readonly) {
+		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('Edit'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberList',t('Cancel'));
 	} else {
-		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'MemberUpdate',t('Save'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'MemberDelete',t('Delete'));
+		if ($mid==0) {
+			$page .= addressbook_hiddenlink('AddressbookForm','mid',0,'MemberInsert',t('Save'));
+		} else {
+			$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberUpdate',t('Save'));
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Delete'));
+		}
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('Cancel'));
 	}
-	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','',0,'MemberList',t('Cancel'));
 	
-	
- 
    /*if (variable_get('addressbook_map_link',0)==1) {
     $page .= '<td valign="top">';
     $page .= '<form action="'.url(URL_MAP_VIEW).'" method="POST">';
@@ -459,8 +449,6 @@ function addressbook_member_view(  )  {
     $page .= '</form>';
     $page .= '</td>';
   }*/
-
-
 
 	$page .= '</div>';
 	$page .= '</form>';
@@ -476,14 +464,56 @@ function addressbook_member_view(  )  {
  * insert member SQL function
  * @return true of false
  */
-function addressbook_insert_member( $first_name, $middle_name, $last_name, $birth_day, $mobile, $email, $notes, $work, $active_roles, $wanted_roles, $fid, $owner ) {
+function addressbook_insert_member() {
 
-  $query  = 'INSERT INTO addressbook_member (first_name, middle_name, last_name, ';
-  $query .= 'birth_day, mobile, email, notes, work, active_roles, wanted_roles, uid, fid, last_updated) VALUES (';
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$mid=htmlentities($_POST["mid"]);
+	
+	$first_name=htmlentities($_POST['first_name']);
+	
+	$middle_name=htmlentities($_POST['middle_name']);
+	
+	$last_name=htmlentities(ucfirst($_POST['last_name']));
+	
+	$mobile=htmlentities($_POST['mobile']);
+	
+	$email=htmlentities($_POST['email']);
+	
+	$notes=htmlentities($_POST['notes']);
+	
+	$work=htmlentities($_POST['work']);
+	
+	$notes=htmlentities($_POST['notes']);
+	
+	$owner=htmlentities($_POST['owner']);
+	
+	$birthday=$_POST['birthday_day'].'-'.$_POST['birthday_month'].'-'.$_POST['birthday_year'];
+	
+	// *****************************
+	// Update Database
+	// *****************************
+	
+  $query  = '
+				INSERT INTO addressbook_member (
+				first_name, 
+				middle_name, 
+				last_name, 
+				birth_day, 
+				mobile, 
+				email, 
+				notes, 
+				work, 
+				active_roles, 
+				wanted_roles, 
+				uid, 
+				last_updated) VALUES (';
   $query .= '"'.$first_name.'",';
   $query .= '"'.$middle_name.'",';
   $query .= '"'.$last_name.'",';
-  $query .= '"'.$birth_day.'",';
+  $query .= '"'.addressbook_convert_date_reverse($birth_day).'",';
   $query .= '"'.$mobile.'",';
   $query .= '"'.$email.'",';
   $query .= '"'.$notes.'",';
@@ -491,51 +521,129 @@ function addressbook_insert_member( $first_name, $middle_name, $last_name, $birt
   $query .= '"'.$active_roles.'",';
   $query .= '"'.$wanted_roles.'",';
   $query .= '"'.$owner.'",';
-  $query .= '"'.$fid.'",';
   $query .= 'SYSDATE() )';
 
-  $result = db_query($query);
-  if ($result==1) {
-    // Query succesfull
-    watchdog('user', 'A member is created in the addressbook');
-    return true;
-  }
-  else {
-    // Query failed
-    return false;
-  }
+	db_query($query);
+
+	// *****************************
+	// create message
+	// *****************************
+	
+	$msg .= t('Member').' '.$mid.' '.t('is created in addressbook');
+	drupal_set_message($msg, 'status');
+	watchdog('user', $msg);
 }
 
 /*
  * update member SQl function
  * @return true of false
  */
-function addressbook_update_member($first_name, $middle_name, $last_name, $birth_day, $mobile, $email, $notes, $work, $active_roles, $wanted_roles, $owner, $fid, $mid) {
+function addressbook_update_member() {
 
-  $query = 'UPDATE addressbook_member SET ';
-  $query .= 'first_name = "'.$first_name.'",';
-  $query .= 'middle_name = "'.$middle_name.'",';
-  $query .= 'last_name = "'.$last_name.'",';
-  $query .= 'birth_day = "'.$birth_day.'",';
-  $query .= 'mobile = "'.$mobile.'",';
-  $query .= 'email = "'.$email.'",';
-  $query .= 'notes = "'.$notes.'",';
-  $query .= 'work = "'.$work.'",';
-  $query .= 'uid = "'.$owner.'",';
-  $query .= 'fid = "'.$fid.'",';
-  $query .= 'active_roles = "'.$active_roles.'",';
-  $query .= 'wanted_roles = "'.$wanted_roles.'",';
-  $query .= 'uid = "'.$owner.'",';
-  $query .= 'last_updated = SYSDATE() WHERE mid='.$mid;
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$mid=htmlentities($_POST["mid"]);
+	addressbook_debug_param("mid", $mid);
+	
+	$first_name=htmlentities($_POST['first_name']);
+	addressbook_debug_param("first_name", $first_name);
+	
+	$middle_name=htmlentities($_POST['middle_name']);
+	addressbook_debug_param("middle_name", $middle_name);
+	
+	$last_name=htmlentities(ucfirst($_POST['last_name']));
+	addressbook_debug_param("last_name", $last_name);
+	
+	$mobile=htmlentities($_POST['mobile']);
+	addressbook_debug_param("mobile", $mobile);
+	
+	$email=htmlentities($_POST['email']);
+	addressbook_debug_param("email", $email);
+	
+	$notes=htmlentities($_POST['notes']);
+	addressbook_debug_param("notes", $notes);
+	
+	$work=htmlentities($_POST['work']);
+	addressbook_debug_param("work", $work);
+	
+	$notes=htmlentities($_POST['notes']);
+	addressbook_debug_param("notes", $notes);
+	
+	$owner=htmlentities($_POST['owner']);
+	addressbook_debug_param("owner", $owner);
+	
+	$birthday=$_POST['birthday_day'].'-'.$_POST['birthday_month'].'-'.$_POST['birthday_year'];
+	addressbook_debug_param("birthday", $birthday);
+	
+	// *****************************
+	// Update Database
+	// *****************************
+	
+	$query = 'UPDATE {addressbook_member} SET ';
+	$query .= 'first_name = "'.$first_name.'",';
+	$query .= 'middle_name = "'.$middle_name.'",';
+	$query .= 'last_name = "'.$last_name.'",';
+	$query .= 'birth_day = "'.addressbook_convert_date_reverse($birthday).'",';
+	$query .= 'mobile = "'.$mobile.'",';
+	$query .= 'email = "'.$email.'",';
+	$query .= 'notes = "'.$notes.'",';
+	$query .= 'work = "'.$work.'",';
+	$query .= 'uid = "'.$owner.'",';
+	$query .= 'active_roles = "'.$active_roles.'",';
+	$query .= 'wanted_roles = "'.$wanted_roles.'",';
+	$query .= 'uid = "'.$owner.'",';
+	$query .= 'last_updated = SYSDATE() WHERE mid='.$mid;
 
-  $result = db_query($query);
-  if ($result==1) {
-    // Query succesfull
-    watchdog('user', 'Member '.$mid.' is updated in addressbook');
-    return true;
-  }
-  else {
-    // Query failed
-    return false;
-  }
+	db_query($query);
+	addressbook_debug_sql($query);
+
+	// *****************************
+	// create message
+	// *****************************
+	
+	$msg .= t('Member').' '.$mid.' '.t('is updated in addressbook');
+	drupal_set_message($msg, 'status');
+	watchdog('user', $msg);
 }
+
+
+/*
+ * Delete member SQl function
+ * @return true of false
+ */
+function addressbook_delete_member() {
+
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$mid=htmlentities($_POST["mid"]);
+	
+	// *****************************
+	// Database actions
+	// *****************************
+
+	if ($mid!=0) {
+	
+		$query = 'delete FROM addressbook_member WHERE mid='.$mid;		
+		db_query($query);  
+	
+		// *****************************
+		// Create message
+		// *****************************
+	
+		$msg .= t('Member').' '.$mid.' '.t('deleted!');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);
+		
+		return 0;
+	}
+	
+	return 1;	
+}
+
+// *********************************************************************************
+// The end
+// *********************************************************************************
