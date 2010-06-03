@@ -57,17 +57,10 @@ function addressbook_mainmenu() {
 	$page .= '<dl class="admin-list">';
     
 	$page .= '<dt>';
-	$page .= '<a href="'.url(URL_ADDRESSBOOK_FAMILY).'">Find family</a>';
+	$page .= '<a href="'.url(URL_ADDRESSBOOK_FAMILY).'">Enter addressbook</a>';
 	$page .= '</dt>';
 	$page .= '<dd>';
-	$page .= t('Find family in addressbook');
-	$page .= '</dd>';
-  
-	$page .= '<dt>';
-	$page .= '<a href="'.url(URL_ADDRESSBOOK_MEMBER).'">Find member</a>';
-	$page .= '</dt>';
-	$page .= '<dd>';
-	$page .= t('Find member in addressbook.');
+	$page .= t('View family & member data of addressbook');
 	$page .= '</dd>';
   
 	$page .= '<dt>';
