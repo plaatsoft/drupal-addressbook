@@ -38,7 +38,6 @@ define('ADDRESSBOOK_VERSION' ,'4.0');
 // Addressbook module URLs.
 define('URL_ADDRESSBOOK',              'addressbook');
 define('URL_ADDRESSBOOK_FAMILY',       'addressbook/family');
-define('URL_ADDRESSBOOK_MEMBER',       'addressbook/member');
 define('URL_ADDRESSBOOK_UPLOAD_CSV',   'addressbook/csv/upload');
 define('URL_ADDRESSBOOK_DOWNLOAD_CSV', 'addressbook/csv/download');
 define('URL_ADDRESSBOOK_EMAIL',        'addressbook/email');
@@ -109,19 +108,12 @@ function addressbook_menu() {
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_ADDRESSBOOK_FAMILY] = array(
-                   'title' => 'Addressbook family',
+	$items[URL_ADDRESSBOOK_FAMILY] = array(
+                   'title' => 'Addressbook data',
                    'page callback' => 'addressbook_family',
                    'access arguments' => array('view addressbook'),
                    'type' => MENU_CALLBACK,
                 );
-
-  $items[URL_ADDRESSBOOK_MEMBER] = array(
-                   'title' => 'Addressbook member',
-                   'page callback' => 'addressbook_member',
-                   'access arguments' => array('view addressbook'),
-                   'type' => MENU_CALLBACK,
-                        );
 
   $items[URL_ADDRESSBOOK_UPLOAD_CSV] = array(
                    'title' => 'Addressbook CSV upload',

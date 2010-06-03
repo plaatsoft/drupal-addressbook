@@ -65,9 +65,16 @@ Release Notes
 - Added main menu.
 - Splits functionality over more files.
 - Added JaveScript and CSS file
-- Rebuild family page from cratch.
 - Added HTML based on active drupal template.
+- Rebuild family page from cratch.
+	- Insert Family. OK
+	- Update Family. OK
+	- Delete Family. ? (Clean up members and pictures)
 - Rebuild member page from cratch.
+	- Insert member. OK
+ 	- Update member. OK
+	- Delete member. ? (Clean up pictures)
+- Descope group email functionality.
  
 Known Minor Issues
 ------------------

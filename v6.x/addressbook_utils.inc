@@ -45,7 +45,7 @@ function addressbook_debug_param($id, $param) {
  * Print on screen SQL commands
  */
 function addressbook_debug_sql($sql) {
-	echo '[Query='.$sql.']';
+	//echo '[Query='.$sql.']';
 }
 
 
@@ -115,7 +115,7 @@ function addressbook_view_text($id, $size, $maxSize, $value, $readonly) {
 function addressbook_view_textarea($id, $cols, $rows, $maxSize, $value, $readonly) {
 	
 	if ($readonly) {
-		return $value;
+		return '<textarea name="'.$id.'" cols='.$cols.' rows='.$rows.' maxlength='.$maxSize.' readonly>'.$value.'</textarea>';
 	} else {	
 		return '<textarea name="'.$id.'" cols='.$cols.' rows='.$rows.' maxlength='.$maxSize.'>'.$value.'</textarea>';
 	}
