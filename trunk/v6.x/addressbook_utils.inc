@@ -84,7 +84,7 @@ function addressbook_sortbar($Sort,$Action) {
 		if ($Sort==$sort_bar[$i]) { 
 			$page .= '<B>'.$Sort.'</B>|';
 		} else {		
-			$page .= oostpoort_hiddenlink('AddressbookForm', 'Sort', $sort_bar[$i], $Action, $sort_bar[$i]).'|';
+			$page .= addressbook_hiddenlink('AddressbookForm', 'Sort', $sort_bar[$i], $Action, $sort_bar[$i]).'|';
 		}
 	}
 	return $page;
@@ -474,29 +474,257 @@ function addressbook_check_number($str) {
 function addressbook_check_access($uid) {
 
   global $user;
-  if ( ( (  ($user->uid==$uid) || 
-            ($uid==0) ||  
-            (variable_get('addressbook_wiki_edit_mode',0)==1)
-         ) 
-         && user_access('add address')
-        ) 
-        || user_access('access administration pages') 
-     ) 
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  $returnValue=false;
+  
+  if ( user_access('add address')) {
+		if ((variable_get('addressbook_wiki_edit_mode',0)==0) && ($user->uid==$uid)) {
+			$returnValue=true;		
+		}
+		if (user_access('access administration pages')) {
+			$returnValue=true;
+		}
+   }
+	return $returnValue;
 }
 
+
+function addressbook_input_picture($readonly) {
+	if (!$readonly) {
+		$page = '<input name="uploadedfile" size="60" type="file" />'; 
+	}
+	return $page;
+}
+
+// ********************************************
+// Picture methods
+// ********************************************
+
+function addressbook_check_picture() {
+	
+	// get fid from session scope
+	$fid=$_POST["fid"];
+	if ($fid=="") $fid=0;
+  
+	// get fid from session scope
+	$mid=$_POST["mid"];
+	if ($mid=="") $mid=0;
+	
+	$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid.' and mid='.$mid;
+	$queryResult = db_query($query);
+	$data = db_fetch_object($queryResult);
+	
+	// Construct a valid drupal path for the named file
+   $file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
+   $target = file_create_path($file);
+
+   // Check to see if the file exists
+   if (file_exists($target)) {
+   	  return true;
+   } else {
+      return false;
+   }
+}
+
+/**
+ * Load picture
+ */
+function addressbook_load_picture($filename, $height, $width, $align, $lightbox) {
+	
+	if ($filename!="") {
+	
+		// Construct a valid drupal path for the named file
+		$file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$filename;
+		$file_normal=ADDRESSBOOK_IMAGE_DIR.'/'.$filename;
+		$target = file_create_path($file);
+		$target_normal = file_create_path($file_normal);
+
+		// Check to see if the file exists
+		if (file_exists($target)) {	
+			$filename=str_replace(array("?q="), "", url($file));
+			$filename_normal=str_replace(array("?q="), "", url($file_normal));
+			if ($lightbox) {
+				$page.='<a href="'.$filename_normal.'" rel="lightbox" >';
+			}
+			$page.='<img align="'.$align.'" ';
+			if ($width!=0) {
+				$page.='width="'.$width.'" ';
+			}
+			if ($height!=0) {
+				$page.='height="'.$height.'" ';
+			}
+			$page.='src="'.$filename.'" />';
+			if ($lightbox) {
+				$page.='</a>';
+			}
+		}
+	}
+	return $page;
+}
+
+/**
+ * Save picture
+ */
+function addressbook_save_picture() {
+
+	global $user;
+
+	// get fid from session scope
+	$fid=$_POST["fid"];
+	if ($fid=="") $fid=0;
+  
+	// get fid from session scope
+	$mid=$_POST["mid"];
+	if ($mid=="") $mid=0;
+  
+	// Fetch Image upload in a HTTP request
+	if ($_FILES['uploadedfile']['name']!='') {
+		  
+		 echo $_FILES['uploadedfile']['name'];
+		if ( (strstr($_FILES['uploadedfile']['name'],'.jpg')) || 
+				(strstr( $_FILES['uploadedfile']['name'],'.JPG')) ) {
+			
+			$filename= date('YmdHis', time()).'.jpg';
+	
+			$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid.' and mid='.$mid;
+			$queryResult = db_query($query);
+			$data = db_fetch_object($queryResult);
+
+			// Check if picture not exist (reload protection)
+			if (strlen($data->picture)==0) {
+  
+				$query  = 'INSERT INTO addressbook_picture (fid,mid,picture,uid,last_updated) VALUES (';
+				$query .= '"'.$fid.'",';
+				$query .= '"'.$mid.'",';
+				$query .= '"'.$filename.'",';
+				$query .= '"'.$user->uid.'",';
+				$query .= 'SYSDATE() )';
+				db_query($query);
+		
+				$error='0';
+				if(!is_dir(ADDRESSBOOK_IMAGE_DIR)) {
+					if( !mkdir(ADDRESSBOOK_IMAGE_DIR) ) {
+				
+						$msg .= t('Creating image directory failed!');
+						drupal_set_message($msg, 'error');
+						$error='1';
+					}
+				}
+			
+				// Check dimensions of image
+				$dimensions = getimagesize($_FILES['uploadedfile']['tmp_name']);
+				$width  = $dimensions[0];
+				$height = $dimensions[1];
+				$resize = 0;
+
+				// Limit picture 
+				if ($width>$height) {
+			
+					if ($width>0) {
+						$ratio = 800 / $width;
+					}
+				
+					if ($ratio < 1) {
+						$width=800;
+						$height=$height*$ratio;
+						$resize = 1;
+					}
+				} else  {
+					if ($width>0) {
+						$ratio = 600 / $width;
+					}
+					if ($ratio < 1) {
+						$width=600;
+						$height=$height*$ratio;
+						$resize = 1;
+					}
+				}
+
+				// Resize uploaded picture
+				if ( $resize == 1 ) {
+					if (!image_scale($_FILES['uploadedfile']['tmp_name'], 
+							file_create_path(ADDRESSBOOK_IMAGE_DIR.'/'.$filename), $width, $height)) {
+				
+						$msg .= t('Foto bestand te groot!');
+						drupal_set_message($msg, 'error');
+					
+						$error='1';
+					}
+				} else {
+					// Not resize needed, move file to storage place
+					copy($_FILES['uploadedfile']['tmp_name'],ADDRESSBOOK_IMAGE_DIR.'/'.$filename);
+				}
+
+				if ($error==0)	{
+					// Create thumbnails directory store
+					if(!is_dir(ADDRESSBOOK_THUMBNAILS_DIR)) {
+						if( !mkdir(ADDRESSBOOK_THUMBNAILS_DIR) )	{
+					
+							$msg .= t('Creating image directory failed!');
+							drupal_set_message($msg, 'error');
+					
+							$error='1';
+						}
+					}
+
+					$resize = 0;
+
+					// Limit picture size on screen
+					if ($width>$height) {
+						if ($width>0) $ratio  = 160 / $width;
+						if ($ratio < 1) {
+							$width=160;
+							$height=$height*$ratio;
+							$resize = 1;
+						}
+					} else {
+						if ($width>0) $ratio  = 120 / $width;
+						if ($ratio < 1) {
+							$width=120;
+							$height=$height*$ratio;
+							$resize = 1;
+						}
+					}
+
+					// Create thumbnail picture
+					// Resize uploaded picture
+					if ( $resize == 1 ) {
+						if (!image_scale(ADDRESSBOOK_IMAGE_DIR.'/'.$filename, 
+							file_create_path(ADDRESSBOOK_THUMBNAILS_DIR.'/'.$filename), $width, $height)) {
+					
+							$msg .= t('Foto bestand is te groot ');
+							drupal_set_message($msg, 'error');
+			
+							$error='1';
+						}
+					} else {
+						// Not resize needed, move file to storage place
+						copy(ADDRESSBOOK_IMAGE_DIR.'/'.$filename, ADDRESSBOOK_THUMBNAILS_DIR.'/'.$filename);
+					}
+
+					if ($error=='0') {
+				
+						$msg .= t('Foto is opgeslagen.');
+						drupal_set_message($msg, 'status');
+					}
+				}
+			} 
+			
+		} else {
+		
+			$msg .= t('Alleen JPG foto formaat wordt ondersteund.');
+			drupal_set_message($msg, 'error');
+		}
+	}
+	
+	// Clear uploaded file
+	$_FILES['uploadedfile']['name']='';
+}
 
 /**
  * Render a page showing the picture full screen.
  * @return HTML
  */
-function addressbook_picture_view( $pid=0 ) {
+/*function addressbook_picture_view( $pid=0 ) {
 
   global $user;
   $page = '<div class="addressbook">';
@@ -659,13 +887,13 @@ function addressbook_picture_view( $pid=0 ) {
 
   $page .= '</div>';
   print theme("page", $page);
-}
+}*/
 
 /**
  * Render a page for uploading a picture.
  * @return HTML
  */
-function addressbook_picture_edit( $mid=0 ) {
+/*function addressbook_picture_edit( $mid=0 ) {
 
   global $user;
   $page = '<div class="addressbook">';
@@ -929,7 +1157,7 @@ function addressbook_picture_edit( $mid=0 ) {
 
   $page .= '</div>';
   print theme("page", $page);
-}
+}*/
 
 // ********************************************
 // The end
