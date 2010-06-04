@@ -271,7 +271,7 @@ function addressbook_family_list() {
 		} else {
 			$name = $data->last_name.', '.$data->middle_name;
 		}
-		$page_tmp .= oostpoort_hiddenlink('AddressbookForm', 'fid', $data->fid, 'FamilyView', $name);
+		$page_tmp .= addressbook_hiddenlink('AddressbookForm', 'fid', $data->fid, 'FamilyView', $name);
 		$page_tmp .= '</td>';	
 	
 		$page_tmp .= '<td>';
@@ -472,7 +472,7 @@ function addressbook_family_view( $fid = -1)  {
 		}
 	}
 	
-	$page .= ' | '.oostpoort_hiddenlink('AddressbookForm','','','FamilyList',t('Return'));
+	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','','','FamilyList',t('Return'));
 	
 	$page .= '</div>';
 	$page .= '</form>';
@@ -842,7 +842,7 @@ function addressbook_member_list( $sort='' )  {
 		// Format Name
 		$page_tmp .= '<td>';
 		$name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,true);
-		$page_tmp .= oostpoort_hiddenlink('AddressbookForm', 'mid', $data->mid, 'MemberView', $name);
+		$page_tmp .= addressbook_hiddenlink('AddressbookForm', 'mid', $data->mid, 'MemberView', $name);
 		$page_tmp .= '</td>';
 		
 		$page_tmp .= '<td>';
@@ -1418,7 +1418,7 @@ function addressbook_insert_member() {
 	$query .= ' a.middle_name="'.$middle_name.'" and ';
 	$query .= ' a.last_name="'.$last_name.'"';
 	
-	oostpoort_debug_sql($query);
+	addressbook_debug_sql($query);
 	$queryResult = db_query($query);     
 	$data = db_fetch_object($queryResult);
 	
