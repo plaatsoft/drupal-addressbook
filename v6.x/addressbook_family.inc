@@ -66,16 +66,14 @@ function addressbook_family($fid=0) {
 			$page = addressbook_family_edit();
 			break;
 			
-		case 'FamilyInsert':
-			addressbook_save_picture();
-			addressbook_family_insert();
-			$page = addressbook_family_view();
-			break;
-			
-		case 'FamilyUpdate':
-			addressbook_save_picture();
-			addressbook_family_update();
-			$page = addressbook_family_view();
+		case 'FamilySave':
+			$error=addressbook_family_save();
+			if (!$error) {
+				addressbook_save_picture();
+				$page .= addressbook_family_view();
+			} else {
+				$page.= addressbook_family_edit();
+			}
 			break;
 			 
 		case 'FamilyDelete':
@@ -100,18 +98,16 @@ function addressbook_family($fid=0) {
 			$page = addressbook_member_view(true);
 			break;
 			
-		case 'MemberInsert': 
-			addressbook_insert_member();
-			addressbook_save_picture();
-			$page = addressbook_family_view();
+		case 'MemberSave': 
+			$error=addressbook_member_save();
+			if (!$error) {
+				addressbook_save_picture();
+				$page = addressbook_family_view();
+			} else {
+				$page = addressbook_member_view(false);
+			}
 			break;
 			
-		case 'MemberUpdate': 
-			addressbook_update_member();
-			addressbook_save_picture();
-			$page = addressbook_family_view();
-			break;
-		
 		case 'MemberDelete': 
 			addressbook_delete_member();
 			addressbook_picture_delete();
@@ -468,7 +464,8 @@ function addressbook_family_view( $fid = -1)  {
 	if (addressbook_check_access($uid)) {
   
 		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('Family Edit'));
-	
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid', $fid, 'MemberEdit', t('Member Add'));
+			
 		if (variable_get('addressbook_map_link',0)==1) {
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'Map',t('Show Map'));
 		}
@@ -517,7 +514,6 @@ function addressbook_family_edit()  {
 		WHERE 
 			a.fid='.$fid;
 					
-	echo $query;
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
 
@@ -618,13 +614,13 @@ function addressbook_family_edit()  {
 		$readonly );
 
 	$page .= addressbook_form_item(
-		t("Last Name"),
+		t("Last Name").addressbook_view_manitory(),
 		addressbook_view_text("last_name", 35, 35, $last_name, $readonly),
 		t("Last name of the family name."), 
 		$readonly );
 
 	$page .= addressbook_form_item(
-		t("Street"),
+		t("Street").addressbook_view_manitory(),
 		addressbook_view_text("street", 50, 50, $street, $readonly),
 		t("Last name of the family name."), 
 		$readonly );
@@ -636,13 +632,13 @@ function addressbook_family_edit()  {
 		$readonly );
 		
 	$page .= addressbook_form_item(
-		t("City"),
+		t("City").addressbook_view_manitory(),
 		addressbook_view_text("city", 50, 50, $city, $readonly),
 		t("City of family address."), 
 		$readonly );
 		
 	$page .= addressbook_form_item(
-		t("Country"),
+		t("Country").addressbook_view_manitory(),
 		addressbook_view_country($country, $readonly),
 		t("Country of family address."), 
 		$readonly );
@@ -655,32 +651,21 @@ function addressbook_family_edit()  {
 		
 	$page .= addressbook_form_item(
 		t("Image file"),
-		addressbook_input_picture($filename, $readonly),
+		addressbook_input_picture($readonly),
 		t("Only jpg format is supported"), 
 		$readonly );
 				
 	// Menu bar
-	if ($fid==0) {
-		$page .= addressbook_hiddenlink('AddressbookForm','',0,'FamilyInsert',t('Save'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid', $fid, 'MemberEdit', t('Member Add'));
-		
-		if (addressbook_check_picture()) {
-			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'PictureDelete',t('Delete Picture'));
-		}
-		
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','',0,'FamilyList',t('Cancel'));
-	} else {
-		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyUpdate',t('Save'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid', $fid, 'MemberEdit', t('Member Add'));
-		
-		if (addressbook_check_picture()) {
-			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'PictureDelete',t('Delete Picture'));
-		}	
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'Delete',t('Delete Family'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
+	
+	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilySave',t('Save'));
+	if (addressbook_check_picture()) {
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'PictureDelete',t('Delete Picture'));
 	}
-	
-	
+	if ($fid!=0) {
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'Delete',t('Delete Family'));
+	}
+	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
+
 	$page .= '</fieldset>';	
 	
 	$page .= '</div>';
@@ -904,6 +889,15 @@ function addressbook_member_view( $readonly=true )  {
 		$fid=$_SESSION['fid'];
 	}
 	addressbook_debug_param("fid", $fid);
+
+	// *****************************
+	// Check Access
+	// *****************************
+	
+	if ( readonly && !addressbook_check_access($data->uid) ) {
+		drupal_access_denied();
+		return;
+	}
 	
 	// *****************************
 	// Query Database
@@ -957,6 +951,24 @@ function addressbook_member_view( $readonly=true )  {
 	}
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
+
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	if ( isset($_POST["first_name"]) ) {
+		$first_name=htmlentities($_POST['first_name']);
+	} else {
+	   $first_name=$data->first_name;
+	}
+	addressbook_debug_param("first_name",$first_name);
+
+	if ( isset($_POST["last_name"]) ) {
+		$last_name=htmlentities($_POST['last_name']);
+	} else {
+	   $last_name=$data->last_name;
+	}
+	addressbook_debug_param("last_name",$last_name);
   
 	// *****************************
 	// Create page
@@ -1005,8 +1017,8 @@ function addressbook_member_view( $readonly=true )  {
 
 	
 	$page .= addressbook_form_item(
-					t("First Name:"),
-					addressbook_view_text("first_name", 50, 50, $data->first_name, $readonly),
+					t("First Name:").addressbook_view_manitory(),
+					addressbook_view_text("first_name", 50, 50, $first_name, $readonly),
 					t("First Name of member"), 
 					$readonly );
 				
@@ -1017,8 +1029,8 @@ function addressbook_member_view( $readonly=true )  {
 					$readonly );
 				
 	$page .= addressbook_form_item(
-					t("Last Name:"),
-					addressbook_view_text("last_name", 50, 50, $data->last_name, $readonly),
+					t("Last Name:".addressbook_view_manitory()),
+					addressbook_view_text("last_name", 50, 50, $last_name, $readonly),
 					t("Last Name of member"), 
 					$readonly );
 						
@@ -1053,10 +1065,10 @@ function addressbook_member_view( $readonly=true )  {
 					$readonly );
 
 	$page .= addressbook_form_item(
-		t("Image file"),
-		addressbook_input_picture($filename, $readonly),
-		t("Only jpg format is supported"), 
-		$readonly );
+					t("Image file"),
+					addressbook_input_picture($readonly),
+					t("Only jpg format is supported"), 
+					$readonly );
 		
 	$page .= addressbook_view_roles($active_roles,$wanted_roles, '1');
 
@@ -1067,13 +1079,11 @@ function addressbook_member_view( $readonly=true )  {
 	// *****************************
 
 	if ($readonly) {
-		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('Edit'));
+		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('Edit'));		
 		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Back'));
 	} else {
-		if ($mid==0) {
-			$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberInsert',t('Save'));
-		} else {
-			$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberUpdate',t('Save'));
+		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberSave',t('Save'));
+		if ($mid!=0) {
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'Delete',t('Delete'));
 		}
 		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('Cancel'));
@@ -1228,10 +1238,10 @@ function addressbook_delete_view() {
 	
 	if (($fid!=0) && ($mid!=0)) {
 		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Yes'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('No'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('No'));
 	} else {
 		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Yes'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('No'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('No'));
 	}
 
 	$page .= '</div>';
@@ -1248,11 +1258,17 @@ function addressbook_delete_view() {
  * insert family SQL function
  * @return true of false
  */
-function addressbook_family_insert() {
+function addressbook_family_save() {
 
 	// *****************************
 	// Get posted Inputs
 	// *****************************
+
+	$fid=htmlentities($_POST["fid"]);
+	if ($fid=="") {
+		$fid=0;
+	}
+	addressbook_debug_param("fid", $fid);
 		
 	$middle_name=htmlentities($_POST['middle_name']);
 	addressbook_debug_param("middle_name",$middle_name);
@@ -1279,122 +1295,126 @@ function addressbook_family_insert() {
 	addressbook_debug_param("owner",$owner);
 	
 	// *****************************
+	// Input Validation
+	// *****************************
+	
+	$error=0;
+
+	if ($last_name=="") {
+
+		$msg = t('Last name is manitory');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+
+	if ($street=="") {
+
+		$msg = t('Street is manitory');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+	
+	if ($city=="") {
+
+		$msg = t('City is manitory');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+	
+	if ($country=="") {
+
+		$msg = t('Country is manitory');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+	
+	if ($error==1) {
+		return true;
+	}
+
+	// *****************************
 	// Update Database
 	// *****************************
 
-	$query  = 'INSERT INTO addressbook_family (middle_name, last_name, street, zipcode, city, ';
-	$query .= 'country, telephone, uid, last_updated) VALUES (';
-	$query .= '"'.$middle_name.'",';
-	$query .= '"'.$last_name.'",';
-	$query .= '"'.$street.'",';
-	$query .= '"'.$zipcode.'",';
-	$query .= '"'.$city.'",';
-	$query .= '"'.$country.'",';
-	$query .= '"'.$telephone.'",';
-	$query .= '"'.$owner.'",';
-	$query .= 'SYSDATE() )';
-
-	db_query($query);
+	if ($fid==0) {
 	
-	// Check new family entry.
-	$query = '
-	    select 
-			fid 
-		from 
-			{addressbook_family} 
-		where 
-			zipcode like "'.$zipcode.'" and 
-			street like "'.$street.'"';
+		// Check if family all exisit, reload button protection
+		$query = 'select fid from addressbook_family where 
+					zipcode like "'.$zipcode.'" and 
+					street like "'.$street.'"';
 			
-	$queryResult = db_query($query);
-	$tmp = db_fetch_object($queryResult);
-	$fid = $tmp->fid;
-	
-	$_SESSION['fid']=$fid;
+		$queryResult = db_query($query);
+		$data = db_fetch_object($queryResult);
+		if ($data->fid!="") {
+
+			// Reload detect
+			return true;
+		}
 		
-	// *****************************
-	// create message
-	// *****************************
+		$query  = 'INSERT INTO addressbook_family (middle_name, last_name, street, zipcode, city, ';
+		$query .= 'country, telephone, uid, last_updated) VALUES (';
+		$query .= '"'.$middle_name.'",';
+		$query .= '"'.$last_name.'",';
+		$query .= '"'.$street.'",';
+		$query .= '"'.$zipcode.'",';
+		$query .= '"'.$city.'",';
+		$query .= '"'.$country.'",';
+		$query .= '"'.$telephone.'",';
+		$query .= '"'.$owner.'",';
+		$query .= 'SYSDATE() )';
+
+		db_query($query);
 	
-	if ($fid!=0) {
-		$msg .= t('Family').' '.$fid.' '.t('created!');
+		// Check new family entry.
+		$query = 'select fid from addressbook_family where 
+					zipcode like "'.$zipcode.'" and 
+					street like "'.$street.'"';
+			
+		$queryResult = db_query($query);
+		$data = db_fetch_object($queryResult);
+			
+		$_SESSION['fid']=$data->fid;
+		
+		// *****************************
+		// create message
+		// *****************************
+	
+		$msg .= t('Family').' '.$data->fid.' '.t('created!');
 		drupal_set_message($msg, 'status');
 		watchdog('user', $msg);
 		
-		return 0;
-	} 
+	} else {
 		
-	return 1;
-}
+		// *****************************
+		// Update Database
+		// *****************************
+	
+		$query = 'UPDATE addressbook_family SET ';
+		$query .= 'middle_name = "'.$middle_name.'",';
+		$query .= 'last_name = "'.$last_name.'",';
+		$query .= 'street = "'.$street.'",';
+		$query .= 'zipcode = "'.$zipcode.'",';
+		$query .= 'city = "'.$city.'",';
+		$query .= 'country = "'.$country.'",';
+		$query .= 'telephone = "'.$telephone.'",';
+		$query .= 'uid = "'.$owner.'",';
+		$query .= 'last_updated = SYSDATE() ';
+		$query .= 'WHERE fid='.$fid;
 
-/*
- * update family SQL function
- * @return true of false
- */
-function addressbook_family_update() {
-
-	// *****************************
-	// Get posted Inputs
-	// *****************************
+		db_query($query);
 	
-	$fid=htmlentities($_POST["fid"]);
-	addressbook_debug_param("fid", $fid);
+		// *****************************
+		// create message
+		// *****************************
 	
-	$middle_name=htmlentities($_POST['middle_name']);
-	addressbook_debug_param("middle_name",$middle_name);
-	
-	$last_name=htmlentities(ucfirst($_POST['last_name']));
-	addressbook_debug_param("last_name",$last_name);
-	
-	$street=htmlentities(ucfirst($_POST['street']));
-	addressbook_debug_param("street",$street);
-	
-	$zipcode=htmlentities($_POST['zipcode']);
-	addressbook_debug_param("zipcode",$zipcode);
-	
-	$city=htmlentities(ucfirst($_POST['city']));
-	addressbook_debug_param("city",$city);
-	
-	$country=htmlentities($_POST['country']);
-	if ($country=='') {
-		$country=variable_get('addressbook_country', 'Nederland');
+		$msg .= t('Family').' '. $fid.' '.t('updated!');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);
+		
 	}
-	addressbook_debug_param("country",$country);
-
-	$telephone=htmlentities($_POST['telephone']);
-	addressbook_debug_param("telephone",$telephone);
-
-	$owner=htmlentities($_POST['owner']);
-	addressbook_debug_param("owner",$owner);
-	
-	// *****************************
-	// Update Database
-	// *****************************
-	
-	$query = 'UPDATE addressbook_family SET ';
-	$query .= 'middle_name = "'.$middle_name.'",';
-	$query .= 'last_name = "'.$last_name.'",';
-	$query .= 'street = "'.$street.'",';
-	$query .= 'zipcode = "'.$zipcode.'",';
-	$query .= 'city = "'.$city.'",';
-	$query .= 'country = "'.$country.'",';
-	$query .= 'telephone = "'.$telephone.'",';
-	$query .= 'uid = "'.$owner.'",';
-	$query .= 'last_updated = SYSDATE() ';
-	$query .= 'WHERE fid='.$fid;
-
-	$result = db_query($query);
-	
-	// *****************************
-	// create message
-	// *****************************
-	
-	$msg .= t('Family').' '. $fid.' '.t('updated!');
-	drupal_set_message($msg, 'status');
-	watchdog('user', $msg);
-	
-	return 0;
+	return false;
 }
+
 
 /*
  * delelete family SQL function
@@ -1445,141 +1465,21 @@ function addressbook_family_delete() {
 }
 
 /*
- * insert member SQL function
- * @return true of false
+ * Save member data to database
+ *
+ * @return error (true of false)
  */
-function addressbook_insert_member() {
+function addressbook_member_save() {
 
 	// *****************************
 	// Get posted Inputs
 	// *****************************
+
+	$mid=htmlentities($_POST["mid"]);
+	addressbook_debug_param("mid", $mid);
 	
 	$fid=$_SESSION["fid"];
 	addressbook_debug_param("fid", $fid);
-	
-	$first_name=htmlentities($_POST['first_name']);
-	addressbook_debug_param("first_name", $last_name);
-	
-	$middle_name=htmlentities($_POST['middle_name']);
-	addressbook_debug_param("middle_name", $middle_name);
-	
-	$last_name=htmlentities(ucfirst($_POST['last_name']));
-	addressbook_debug_param("last_name", $last_name);
-	
-	$mobile=htmlentities($_POST['mobile']);
-	addressbook_debug_param("mobile", $mobile);
-	
-	$email=htmlentities($_POST['email']);
-	addressbook_debug_param("email", $email);
-	
-	$notes=htmlentities($_POST['notes']);
-	addressbook_debug_param("notes", $notes);
-	
-	$work=htmlentities($_POST['work']);
-	addressbook_debug_param("work", $work);
-	
-	$notes=htmlentities($_POST['notes']);
-	addressbook_debug_param("notes", $notes);
-	
-	$owner=htmlentities($_POST['owner']);
-	addressbook_debug_param("owner", $owner);
-	
-	$birthday=$_POST['birthday_day'].'-'.$_POST['birthday_month'].'-'.$_POST['birthday_year'];
-	addressbook_debug_param("birthday", $birthday);
-	
-	// *****************************
-	// Update Database
-	// *****************************
-	
-	// Check if user allready exist. Protect against reload button
-	$query  = 'select ';
-	$query .= ' a.uid as uid ';
-	$query .= 'from ';
-	$query .= ' addressbook_member a ';
-	$query .= 'where ' ;
-	$query .= ' a.first_name="'.$first_name.'" and ';
-	$query .= ' a.middle_name="'.$middle_name.'" and ';
-	$query .= ' a.last_name="'.$last_name.'"';
-	
-	addressbook_debug_sql($query);
-	$queryResult = db_query($query);     
-	$data = db_fetch_object($queryResult);
-	
-	if ($data->uid=="") {
-	
-		// Insert new member 
-		$query  = '
-			INSERT INTO addressbook_member a (
-				a.first_name, 
-				a.middle_name, 
-				a.last_name, 
-				a.birth_day, 
-				a.mobile, 
-				a.email, 
-				a.notes, 
-				a.work, 
-				a.active_roles, 
-				a.wanted_roles, 
-				a.uid, 
-				a.fid,
-				a.last_updated) VALUES (';
-		$query .= '"'.$first_name.'",';
-		$query .= '"'.$middle_name.'",';
-		$query .= '"'.$last_name.'",';
-		$query .= '"'.addressbook_convert_date_reverse($birthday).'",';
-		$query .= '"'.$mobile.'",';
-		$query .= '"'.$email.'",';
-		$query .= '"'.$notes.'",';
-		$query .= '"'.$work.'",';
-		$query .= '"'.$active_roles.'",';
-		$query .= '"'.$wanted_roles.'",';
-		$query .= '"'.$owner.'",';
-		$query .= '"'.$fid.'",';
-		$query .= 'SYSDATE() )';
-
-		db_query($query);
-		
-		// Get new Member id
-		$query  = 'select ';
-		$query .= ' a.uid as uid ';
-		$query .= 'from ';
-		$query .= ' addressbook_member a ';
-		$query .= 'where ' ;
-		$query .= ' a.first_name="'.$first_name.'" and ';
-		$query .= ' a.middle_name="'.$middle_name.'" and ';
-		$query .= ' a.last_name="'.$last_name.'"';
-	
-		addressbook_debug_sql($query);
-		$queryResult = db_query($query);     
-		$data = db_fetch_object($queryResult);
-	
-		$_SESSION["mid"]=$data->mid;
-		
-		// *****************************
-		// create message
-		// *****************************
-	
-		$msg .= t('Member').' '.$data->mid.' '.t('created');
-		drupal_set_message($msg, 'status');
-		watchdog('user', $msg);
-		
-		return 0;
-	}
-	return 1;
-}
-
-/*
- * update member SQl function
- * @return true of false
- */
-function addressbook_update_member() {
-
-	// *****************************
-	// Get posted Inputs
-	// *****************************
-	
-	$mid=htmlentities($_POST["mid"]);
-	addressbook_debug_param("mid", $mid);
 	
 	$first_name=htmlentities($_POST['first_name']);
 	addressbook_debug_param("first_name", $first_name);
@@ -1612,36 +1512,138 @@ function addressbook_update_member() {
 	addressbook_debug_param("birthday", $birthday);
 	
 	// *****************************
+	// Input Validation
+	// *****************************
+	
+	$error=0;
+	
+	if ($first_name=="") {
+
+		$msg = t('First name is manitory');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+
+	if ($last_name=="") {
+
+		$msg = t('Last name is manitory');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+
+	if ($error==1) {
+		return true;
+	}
+	
+	// *****************************
 	// Update Database
 	// *****************************
 	
-	$query = 'UPDATE addressbook_member SET ';
-	$query .= 'first_name = "'.$first_name.'",';
-	$query .= 'middle_name = "'.$middle_name.'",';
-	$query .= 'last_name = "'.$last_name.'",';
-	$query .= 'birth_day = "'.addressbook_convert_date_reverse($birthday).'",';
-	$query .= 'mobile = "'.$mobile.'",';
-	$query .= 'email = "'.$email.'",';
-	$query .= 'notes = "'.$notes.'",';
-	$query .= 'work = "'.$work.'",';
-	$query .= 'uid = "'.$owner.'",';
-	$query .= 'active_roles = "'.$active_roles.'",';
-	$query .= 'wanted_roles = "'.$wanted_roles.'",';
-	$query .= 'uid = "'.$owner.'",';
-	$query .= 'last_updated = SYSDATE() WHERE mid='.$mid;
-
-	db_query($query);
-	addressbook_debug_sql($query);
-
-	// *****************************
-	// create message
-	// *****************************
+	if ($mid==0) {
+		
+		// Check if user allready exist. Protect against reload button
+		$query  = 'select ';
+		$query .= ' a.uid as uid ';
+		$query .= 'from ';
+		$query .= ' addressbook_member a ';
+		$query .= 'where ' ;
+		$query .= ' a.first_name="'.$first_name.'" and ';
+		$query .= ' a.middle_name="'.$middle_name.'" and ';
+		$query .= ' a.last_name="'.$last_name.'"';
 	
-	$msg .= t('Member').' '.$mid.' '.t('is updated');
-	drupal_set_message($msg, 'status');
-	watchdog('user', $msg);
+		addressbook_debug_sql($query);
+		$queryResult = db_query($query);     
+		$data = db_fetch_object($queryResult);
 	
-	return 0;
+		if ($data->uid!="") {
+		
+			// reload detect, return direct!
+			return true;
+		}
+				
+		// Insert new member 
+		$query  = '
+			INSERT INTO addressbook_member (
+				first_name, 
+				middle_name, 
+				last_name, 
+				birth_day, 
+				mobile, 
+				email, 
+				notes, 
+				work, 
+				active_roles, 
+				wanted_roles, 
+				uid, 
+				fid,
+				last_updated) VALUES (';
+		$query .= '"'.$first_name.'",';
+		$query .= '"'.$middle_name.'",';
+		$query .= '"'.$last_name.'",';
+		$query .= '"'.addressbook_convert_date_reverse($birthday).'",';
+		$query .= '"'.$mobile.'",';
+		$query .= '"'.$email.'",';
+		$query .= '"'.$notes.'",';
+		$query .= '"'.$work.'",';
+		$query .= '"'.$active_roles.'",';
+		$query .= '"'.$wanted_roles.'",';
+		$query .= '"'.$owner.'",';
+		$query .= '"'.$fid.'",';
+		$query .= 'SYSDATE() )';
+
+		db_query($query);
+		
+		// Get new Member id
+		$query  = 'select ';
+		$query .= ' a.uid as uid ';
+		$query .= 'from ';
+		$query .= ' addressbook_member a ';
+		$query .= 'where ' ;
+		$query .= ' a.first_name="'.$first_name.'" and ';
+		$query .= ' a.middle_name="'.$middle_name.'" and ';
+		$query .= ' a.last_name="'.$last_name.'"';
+	
+		addressbook_debug_sql($query);
+		$queryResult = db_query($query);     
+		$data = db_fetch_object($queryResult);
+			
+		// *****************************
+		// create message
+		// *****************************
+	
+		$msg .= t('Member').' '.$data->mid.' '.t('created');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);	
+	
+	} else {
+		
+		$query = 'UPDATE addressbook_member SET ';
+		$query .= 'first_name = "'.$first_name.'",';
+		$query .= 'middle_name = "'.$middle_name.'",';
+		$query .= 'last_name = "'.$last_name.'",';
+		$query .= 'birth_day = "'.addressbook_convert_date_reverse($birthday).'",';
+		$query .= 'mobile = "'.$mobile.'",';
+		$query .= 'email = "'.$email.'",';
+		$query .= 'notes = "'.$notes.'",';
+		$query .= 'work = "'.$work.'",';
+		$query .= 'uid = "'.$owner.'",';
+		$query .= 'active_roles = "'.$active_roles.'",';
+		$query .= 'wanted_roles = "'.$wanted_roles.'",';
+		$query .= 'uid = "'.$owner.'",';
+		$query .= 'last_updated = SYSDATE() WHERE mid='.$mid;
+
+		db_query($query);		
+		addressbook_debug_sql($query);
+
+		// *****************************
+		// create message
+		// *****************************
+	
+		$msg .= t('Member').' '.$mid.' '.t('updated');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);	
+	}
+	return false;
 }
 
 
