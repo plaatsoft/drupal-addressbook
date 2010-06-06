@@ -63,6 +63,13 @@ function addressbook_show_array($array) {
 // Debug methods
 // ********************************************
 
+/**
+ * View Manitory & character
+ */
+function addressbook_view_manitory() {
+	return '<span class="form-required" title="'.t('This is a manitory field').'"> *</span>';
+}
+
 function addressbook_breadcrumb($node) {
 		
 	$data = array();
@@ -134,7 +141,7 @@ function addressbook_view_text($id, $size, $maxSize, $value, $readonly) {
 function addressbook_view_textarea($id, $cols, $rows, $maxSize, $value, $readonly) {
 	
 	if ($readonly) {
-		return '<textarea name="'.$id.'" cols='.$cols.' rows='.$rows.' maxlength='.$maxSize.' readonly>'.$value.'</textarea>';
+		return '<textarea name="'.$id.'" cols='.$cols.' rows='.$rows.' maxlength='.$maxSize.' disabled="true" >'.$value.'</textarea>';
 	} else {	
 		return '<textarea name="'.$id.'" cols='.$cols.' rows='.$rows.' maxlength='.$maxSize.'>'.$value.'</textarea>';
 	}
@@ -506,17 +513,15 @@ function addressbook_check_access($uid) {
 	return $returnValue;
 }
 
-
-function addressbook_input_picture($readonly) {
-	if (!$readonly) {
-		$page = '<input name="uploadedfile" size="60" type="file" />'; 
-	}
-	return $page;
-}
-
 // ********************************************
 // Picture methods
 // ********************************************
+
+function addressbook_input_picture($readonly) {
+	if (!$readonly) {
+		return '<input name="uploadedfile" size="60" type="file" />'; 
+	}
+}
 
 function addressbook_check_picture() {
 	
