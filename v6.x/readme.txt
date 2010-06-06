@@ -75,10 +75,12 @@ Release Notes
  	- Update member. OK
 	- Delete member. ? (Clean up pictures)
 - Descope group email functionality.
- 
+
+05-06-2010 v6.x-4.1
+- Improve member and family delete. Delete all related data.
+
 Known Minor Issues
 ------------------
 - Image is not removed when family member is deleted
 - Image is not removed when family is deleted
-- Family members are not removed when family is deleted
 - Role definitions may not contain spaces

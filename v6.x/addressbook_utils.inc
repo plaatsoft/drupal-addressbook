@@ -63,6 +63,25 @@ function addressbook_show_array($array) {
 // Debug methods
 // ********************************************
 
+function addressbook_breadcrumb($node) {
+		
+	$data = array();
+	
+	$tmp[] = l(t('Start'), "");
+	$tmp[] = l(t('Addressbook'),ADDRESSBOOK_MENU);
+	
+	if ($node["child1"]!="") {
+		$tmp[] = $node["child1"];		
+	}
+	if ($node["child2"]!="") {
+		$tmp[] = $node["child2"];		
+	}
+	if ($node["child3"]!="") {
+		$tmp[] = $node["child3"];		
+	}
+	drupal_set_breadcrumb( $tmp );
+}
+
 function addressbook_view_timestamp($last_updated) {
 
 	if ($last_updated!="") {

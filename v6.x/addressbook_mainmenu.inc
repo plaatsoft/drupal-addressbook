@@ -38,9 +38,9 @@ function addressbook_mainmenu() {
 	$_SESSION['Search']="";
 	
 	// Breadcrumb menu
-	oostpoort_breadcrumb('');
+	addressbook_breadcrumb('');
 
-	$page .= '<div class="oostpoort">';
+	$page .= '<div class="addressbook">';
 
 	drupal_set_title(t('Addressbook Menu').' '.ADDRESSBOOK_VERSION);
 
