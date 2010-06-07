@@ -594,11 +594,20 @@ function addressbook_save_picture() {
 
 	// get fid from session scope
 	$fid=$_POST["fid"];
-	if ($fid=="") $fid=0;
+	if ($fid=="") {
+		$fid=$_SESSION["fid"];
+		if ($fid=="") {
+			$fid=0;
+		}
+	}
+	addressbook_debug_param("fid",$fid);
   
 	// get fid from session scope
 	$mid=$_POST["mid"];
-	if ($mid=="") $mid=0;
+	if ($mid=="") {
+		$mid=0;
+	}
+	addressbook_debug_param("mid",$mid);
   
 	// Fetch Image upload in a HTTP request
 	if ($_FILES['uploadedfile']['name']!='') {
