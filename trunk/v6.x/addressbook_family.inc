@@ -205,6 +205,10 @@ function addressbook_family_list() {
 	$page .= '<form name="AddressbookForm" method="POST" >';	
 	$page .= '<div class="addressbook">';
   
+	// Breadcrumb menu
+	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+	addressbook_breadcrumb($node);
+
   	$page .= '<fieldset>' ;
 	$page .= '<legend>'.t('Filteren').'</legend>';
 	
@@ -373,6 +377,11 @@ function addressbook_family_view( $fid = -1)  {
 	$page .= '<form enctype="multipart/form-data" name="AddressbookForm" method="POST" >';
 	$page .= '<div class="addressbook">';
 						
+	// Breadcrumb menu
+	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyView', t("Family view"));
+	addressbook_breadcrumb($node);
+
 	$page .= '<fieldset>' ;
 	
 	$page .= addressbook_load_picture($data->picture, 0, 0, "right", true);
@@ -584,6 +593,11 @@ function addressbook_family_edit()  {
 	$page .= '<div class="addressbook">';
 
 	drupal_set_title(t('Addressbook family edit'));
+
+	// Breadcrumb menu
+	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyView', t("Family view"));
+	addressbook_breadcrumb($node);
 	
 	$page .= '<fieldset>' ;	
 	$page .= '<legend>'.t('Family details').'</legend>';
@@ -733,6 +747,10 @@ function addressbook_member_list( $sort='' )  {
   
 	$page .= '<form name="AddressbookForm" method="POST" >';	
 	$page .= '<div class="addressbook">';
+
+	// Breadcrumb menu
+	$node["child1"] = t("Member list");
+	addressbook_breadcrumb($node);
   
   	$page .= '<fieldset>' ;
 	$page .= '<legend>'.t('Filteren').'</legend>';
@@ -943,6 +961,14 @@ function addressbook_member_view( $readonly=true )  {
 		$last_name=$data->last_name;
 	}
 	addressbook_debug_param("last_name",$last_name);
+	
+	if ( isset($_POST["birth_day"]) ) {
+		$birth_day=htmlentities($_POST['birth_day']);
+	} else {
+		$birth_day=$data->birth_day;
+	}
+	addressbook_debug_param("birth_day",$birth_day);
+	
   	
 	// *****************************
 	// Create page
@@ -952,7 +978,13 @@ function addressbook_member_view( $readonly=true )  {
 
 	$page .= '<form enctype="multipart/form-data" name="AddressbookForm" method="POST" >';
 	$page .= '<div class="addressbook">';
-				
+		
+	// Breadcrumb menu
+	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyView', t("Family view"));
+	$node["child3"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberView', t("Member view"));
+	addressbook_breadcrumb($node);
+		
 	$page .= '<fieldset>' ;
 
 	$page .= addressbook_load_picture($data->picture, 0, 0, "right", true);
@@ -1044,7 +1076,7 @@ function addressbook_member_view( $readonly=true )  {
 					t("Only jpg format is supported"), 
 					$readonly );
 		
-	$page .= addressbook_view_roles($active_roles,$wanted_roles, '1');
+	$page .= addressbook_view_roles($data->active_roles,$data->wanted_roles, $readonly);
 
 	$page .= '</fieldset>' ;
 
@@ -1059,23 +1091,13 @@ function addressbook_member_view( $readonly=true )  {
 		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberSave',t('Save'));
 		if ($mid!=0) {
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'Delete',t('Delete'));
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('Cancel'));
+		} else {
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
 		}
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('Cancel'));
 	}
+		
 	
-   /*if (variable_get('addressbook_map_link',0)==1) {
-    $page .= '<td valign="top">';
-    $page .= '<form action="'.url(URL_MAP_VIEW).'" method="POST">';
-    $page .= '<input type="hidden" name="street" value="'.$data2->street.'" />';
-    $page .= '<input type="hidden" name="city" value="'.$data2->city.'" />';
-    $page .= '<input type="hidden" name="country" value="'.$data2->country.'" />';
-    $page .= '<input type="hidden" name="fid" value="'.$fid.'" />';
-    $page .= '<input type="hidden" name="mid" value="'.$mid.'" />';
-    $page .= '<input type="submit" value="'.t('Go to Map').'" />';
-    $page .= '</form>';
-    $page .= '</td>';
-  }*/
-
 	$page .= '</div>';
 	$page .= '</form>';
  
@@ -1097,6 +1119,8 @@ function addressbook_map_view() {
 	
 	$query  = '
 			SELECT 
+				b.last_name as last_name,
+				b.middle_name as middle_name,
 				b.street as street, 
 				b.city as city, 
 				b.country as country
@@ -1111,14 +1135,7 @@ function addressbook_map_view() {
 	// *****************************
 	// Create page
 	// *****************************
-
-	drupal_set_title(t('Addressbook map view'));
-
-	$page .= '<form name="AddressbookForm" method="POST" >';	
-	$page .= '<div class="addressbook">';
   
-  
-	drupal_set_html_head('');
 	drupal_set_html_head('<script type=\'text/javascript\' src=\'http://api.map24.com/ajax/1.2/?init=default\'></script>');
 	drupal_set_html_head('<script type=\'text/javascript\'>');
 	drupal_set_html_head('var map = null;');
@@ -1167,18 +1184,31 @@ function addressbook_map_view() {
 
 	$page.='<body onload=\'goMap24()\'>';
 
-	$page .= '<field>';
+	$page .= '<form name="AddressbookForm" method="POST" >';	
+	$page .= '<div class="addressbook">';
+	
+	drupal_set_title(t('Addressbook map view'));
+		
+		// Breadcrumb menu
+	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyView', t("Family view"));
+	$node["child3"] = t("Map view");
+	addressbook_breadcrumb($node);
 
-	$page .= '<td valign="left">';
-	$page .= '<b>'.t('Address: ').$data->street.', '.$data->city.', '.$data->country.'</b>';
+	$page .= '<field>';
 	
 	$page .= '<br/>';
+	$page .= '<h4>'.$data->middle_name.' '.$data->last_name.'</h4>';
+	$page .= '<h4>'.$data->street.'</h4>';
+	$page .= '<h4>'.$data->city.'</h4>';
+	$page .= '<h4>'.$data->country.'</h4>';
+	$page .= '<br/>';
+	
 	$page .= '<div id="maparea"></div>';
-	
+		
 	$page .= '</field>';
-  
-  	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Back'));
-	
+	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Back'));
+		
 	$page .= '</div>';
 	$page .= '</form>';
 	$page .= '</body>';
@@ -1215,8 +1245,21 @@ function addressbook_delete_view() {
 	
 	$page .= '<h4>';
 	if (($mid!=0) && ($fid!=0)) {
+	
+		// Breadcrumb menu
+		$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+		$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyEdit', t("Family view"));
+		$node["child3"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberEdit', t("Member view"));
+		addressbook_breadcrumb($node);
+
 		$page .= t("Delete selected member. Are you sure?");
+		
 	} else {
+		// Breadcrumb menu
+		$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+		$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyEdit', t("Family view"));
+		addressbook_breadcrumb($node);
+
 		$page .= t("Delete selected family. Are you sure?");
 	}
 	$page .= '</h4>';
@@ -1499,6 +1542,35 @@ function addressbook_member_save() {
 	$birthday=$_POST['birthday_day'].'-'.$_POST['birthday_month'].'-'.$_POST['birthday_year'];
 	addressbook_debug_param("birthday", $birthday);
 	
+	/* Fetch all active and wanted roles from the HTTP request */
+	$i=0;
+	$active_first=1;
+	$wanted_first=1;
+	$tmp=split( ",", variable_get('addressbook_roles',''));
+	while ($tmp[$i]!='') {
+		if ($_POST["active_$tmp[$i]"]=='on') {
+			if ($active_first=='1') {
+				$active_roles=$tmp[$i];
+				$active_first=0;
+			} else {
+				$active_roles.=';'.$tmp[$i];
+			}
+		}
+    
+
+		if ($_POST["wanted_$tmp[$i]"]=='on') {
+			if ($wanted_first=='1') {
+				$wanted_roles=$tmp[$i];
+				$wanted_first=0;
+			} else {
+				$wanted_roles.=';'.$tmp[$i];
+			}
+		}
+		$i++;
+	}
+	addressbook_debug_param("active_roles", $active_roles);
+	addressbook_debug_param("wanted_roles", $wanted_roles);
+
 	// *****************************
 	// Input Validation
 	// *****************************

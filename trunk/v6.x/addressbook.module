@@ -178,13 +178,6 @@ function addressbook_settings() {
      '#options' => array( 0 => t('middle last, first'), 1 => t('first middle last') ),
      '#description' => t('Set the name format which will be used in the general addressbook list page.'));
 
-  $form['settings_general']['addressbook_show_sort_bar'] = array(
-     '#type' => 'select',
-     '#title' => t('Enable sort bar'),
-     '#default_value' => variable_get('addressbook_show_sort_bar',1),
-     '#options' => array( 0 => t('No'), 1 => t('Yes') ),
-     '#description' => t('Enable / disable sort bar in general addressbook list page.'));
-
   $form['settings_general']['addressbook_roles'] = array(
      '#type' => 'textarea',
      '#title' => t('Roles'),
@@ -206,13 +199,6 @@ function addressbook_settings() {
      '#default_value' => variable_get('addressbook_show_thumbnails',0),
      '#options' => array( 0 => t('No'), 1 => t('Yes') ),
      '#description' => t('Enable / disable thumbnail pictures in family list and family member list.'));
-
-  $form['settings_general']['addressbook_email_manitory'] = array(
-     '#type' => 'select',
-     '#title' => t('Email field manitory'),
-     '#default_value' => variable_get('addressbook_email_manitory',1),
-     '#options' => array( 0 => t('No'), 1 => t('Yes') ),
-     '#description' => t('Enable / disable email field as mandatory field.'));
 
   $form['settings_general']['addressbook_wiki_edit_mode'] = array(
      '#type' => 'select',
