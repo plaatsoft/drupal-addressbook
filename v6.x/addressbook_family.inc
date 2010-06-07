@@ -118,6 +118,10 @@ function addressbook_family($fid=0) {
 		// Other Actions
 		// ******************
 			
+		case 'ShowMap':
+			$page = addressbook_map_view();
+			break;
+			
 		case 'Delete':
 		    $page = addressbook_delete_view();
 			break;
@@ -382,18 +386,19 @@ function addressbook_family_view( $fid = -1)  {
 	// Query Family Members
 	$query  = '
 		SELECT 	
-			mid, 
-			first_name, 
-			middle_name, 
-			last_name, 
-			birth_day, 
-			mobile, 
-			email, 
-			uid 
+			a.mid, 
+			a.first_name, 
+			a.middle_name, 
+			a.last_name, 
+			a.birth_day, 
+			a.mobile, 
+			a.email, 
+			a.uid,
+			b.picture as picture
 		FROM 
-			{addressbook_member} 
+			addressbook_member a LEFT JOIN addressbook_picture b ON b.fid=a.fid and b.mid=a.mid 
 		WHERE 
-			fid='.$fid.' 
+			a.fid='.$fid.' 
 		ORDER BY birth_day';
 		
 	$queryResult = db_query($query);
@@ -422,20 +427,10 @@ function addressbook_family_view( $fid = -1)  {
 		}
 
 		if ( variable_get('addressbook_show_thumbnails',0)==1 ) {
-			$query2  = 'SELECT pid, picture FROM {addressbook_picture} WHERE fid="'.$fid.'" AND mid="'.$data->mid.'"';
-			$queryResult2 = db_query($query2);
-			$tmp = db_fetch_object($queryResult2);
-
 			$page .= '<td>';
-			
-			if ($tmp!=null) {	
-				// Show each picture with is found
-				$filename=url(THUMBNAILS_DIR.'/'.$tmp->picture);
-				$filename=str_replace(array("?q="), "", $filename);
-				$page .= '<img src="'.$filename.'" width=25 height=30/>';
-			} 
+			$page .= addressbook_load_picture($data->picture, 25, 30, "left", false);
 			$page .= '</td>';
-      }
+		}	
 	
 		$page .= '<td>';
 		$name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,true);
@@ -467,7 +462,7 @@ function addressbook_family_view( $fid = -1)  {
 		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid', $fid, 'MemberEdit', t('Member Add'));
 			
 		if (variable_get('addressbook_map_link',0)==1) {
-			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'Map',t('Show Map'));
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'ShowMap',t('Show Map'));
 		}
 	}
 	
@@ -711,28 +706,23 @@ function addressbook_member_list( $sort='' )  {
 	// Fetch member from database
   $query  = '
 		SELECT 
-			first_name, 
-			middle_name, 
-			last_name, 
-			mobile, 
-			email, 
-			mid, 
-			fid, 
-			uid, 
-			(SELECT telephone FROM {addressbook_family} WHERE fid=addressbook_member.fid) telephone 
+			a.first_name, 
+			a.middle_name, 
+			a.last_name, 
+			a.mobile, 
+			a.email, 
+			a.mid, 
+			a.fid, 
+			a.uid, 
+			b.telephone
+			c.picture as picture
 		FROM 
-			{addressbook_member}
+			addressbook_member a, addressbook_family b LEFT JOIN addressbook_picture c ON c.fid=b.fid and c.mid=a.mid 
 		WHERE 
+			a.fid=b.fid and
 			last_name LIKE "'.$parameter.'%" ';
-  
-	if ($role!='') {
-		if ($_SESSION['role_type']=='active') {
-			$query .= 'AND active_roles LIKE "%'.$role.'%" ';
-		} else {
-			$query .= 'AND wanted_roles LIKE "%'.$role.'%" ';
-		}
-	}
 	$query .= 'ORDER BY last_name, middle_name ';
+	
 	$queryResult = db_query($query);
 
 	// *****************************
@@ -809,28 +799,12 @@ function addressbook_member_list( $sort='' )  {
 			$page_tmp .= '</td>';
 		}
 
-		if ( variable_get('addressbook_show_thumbnails',0)==1) {
-			$query2  = 'SELECT pid, picture ';
-			$query2 .= 'FROM {addressbook_picture} ';
-			$query2 .= 'WHERE fid="'.$data->fid.'" AND mid="'.$data->mid.'"';
-			$queryResult2 = db_query($query2);
-			$tmp = db_fetch_object($queryResult2);
-		
-			$page_tmp .= '<td>';
-			if ($tmp!=null) {
-				// Show each picture with is found
-				if ( addressbook_check_access($data->uid) ) {
-					$page_tmp .= '<a href="'.url(URL_MEMBER_EDIT.'/').$data->mid.'">';
-				} else {
-					$page_tmp .= '<a href="'.url(URL_MEMBER_VIEW.'/').$data->mid.'">';
-				}
-				$filename=url(THUMBNAILS_DIR.'/'.$tmp->picture);
-				$filename=str_replace(array("?q="), "", $filename);
-				$page_tmp .='<img src="'.$filename.'" width=50 height=60/></a>';
-			} 
-			$page_tmp .= '</td>';
+		if ( variable_get('addressbook_show_thumbnails',0)==1 ) {
+			$page .= '<td>';
+			$page .= addressbook_load_picture($data->picture, 30, 25, "left", false);
+			$page .= '</td>';
 		}
-     
+		     
 		// Format Name
 		$page_tmp .= '<td>';
 		$name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,true);
@@ -944,7 +918,7 @@ function addressbook_member_view( $readonly=true )  {
 				b.telephone as telephone,
 				c.picture as picture
 			FROM 
-				addressbook_member a, addressbook_family b LEFT JOIN addressbook_picture c ON c.fid=b.fid and c.mid='.$mid.'
+				addressbook_member a, addressbook_family b LEFT JOIN addressbook_picture c ON c.fid=b.fid and c.mid='.$mid.' 
 			WHERE 
 				b.fid=a.fid and
 				a.mid='.$mid;
@@ -959,17 +933,17 @@ function addressbook_member_view( $readonly=true )  {
 	if ( isset($_POST["first_name"]) ) {
 		$first_name=htmlentities($_POST['first_name']);
 	} else {
-	   $first_name=$data->first_name;
+		$first_name=$data->first_name;
 	}
 	addressbook_debug_param("first_name",$first_name);
 
 	if ( isset($_POST["last_name"]) ) {
 		$last_name=htmlentities($_POST['last_name']);
 	} else {
-	   $last_name=$data->last_name;
+		$last_name=$data->last_name;
 	}
 	addressbook_debug_param("last_name",$last_name);
-  
+  	
 	// *****************************
 	// Create page
 	// *****************************
@@ -980,13 +954,13 @@ function addressbook_member_view( $readonly=true )  {
 	$page .= '<div class="addressbook">';
 				
 	$page .= '<fieldset>' ;
+
+	$page .= addressbook_load_picture($data->picture, 0, 0, "right", true);
 	
 	$page .= '<h4>'.$data->street.'</h4>';	
 	$page .= '<h4>'.$data->zipcode.'&nbsp;&nbsp;'.$data->city.'</h4>';	
 	$page .= '<h4>'.$data->country.'</h4>';	
 	$page .= '<h4>'.$data->phone.'</h4>';	
-
-	$page .= addressbook_load_picture($data->picture, 0, 0, "right", true);
 
 	$page .= '</fieldset>' ;
 		
@@ -1110,101 +1084,106 @@ function addressbook_member_view( $readonly=true )  {
 
 function addressbook_map_view() {
 
-  $page = '<div class="addressbook">';
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$fid=$_POST["fid"];
+	addressbook_debug_param("fid", $fid);
+	
+	// *****************************
+	// Query Database
+	// *****************************
+	
+	$query  = '
+			SELECT 
+				b.street as street, 
+				b.city as city, 
+				b.country as country
+			FROM 
+				addressbook_family b
+			WHERE 
+				b.fid='.$fid;
+		
+	$queryResult = db_query($query);
+	$data = db_fetch_object($queryResult);
+	
+	// *****************************
+	// Create page
+	// *****************************
 
-  drupal_set_title(t('Addressbook map view'));
+	drupal_set_title(t('Addressbook map view'));
 
-  // Fetch search parameter out HTTP request
-  $street=htmlentities($_POST['street']);
-  $city=htmlentities($_POST['city']);
-  $country=htmlentities($_POST['country']);
-  $fid=htmlentities($_POST['fid']);
-  $mid=htmlentities($_POST['mid']);
-
-  drupal_set_html_head('');
-  drupal_set_html_head('<script type=\'text/javascript\' src=\'http://api.map24.com/ajax/1.2/?init=default\'></script>');
-  drupal_set_html_head('<script type=\'text/javascript\'>');
-  drupal_set_html_head('var map = null;');
-
-  drupal_set_html_head('function goMap24() {');
-  drupal_set_html_head('var mrcContainer = new Map24.Webservices.Request.MapletRemoteControl(map);');
-
-  drupal_set_html_head('map = Map24.Webservices.getMap24Application({');
-  drupal_set_html_head('AppKey: "'.variable_get('addressbook_map_key', '').'",');
-  drupal_set_html_head('MapArea: document.getElementById( "maparea" ),');
-  drupal_set_html_head('Maptype: "JAVA",');
-  drupal_set_html_head('MapWidth: 640,');
-  drupal_set_html_head('MapHeight: 480,');
-  drupal_set_html_head('MRC: mrcContainer');
-  drupal_set_html_head('});');
-  drupal_set_html_head('geocode(\''.$street.','.$city.','.$country.'\')');
-  drupal_set_html_head('}');
-
-  drupal_set_html_head('function geocode( addressString ){');
-  drupal_set_html_head('map.Webservices.sendRequest(');
-  drupal_set_html_head('new Map24.Webservices.Request.MapSearchFree(map, {');
-  drupal_set_html_head('SearchText: addressString,');
-  drupal_set_html_head('MaxNoOfAlternatives: 50');
-  drupal_set_html_head('})');
-  drupal_set_html_head(');');
-
-  drupal_set_html_head('map.onMapSearchFree = function( event ){');
-  drupal_set_html_head('var mrcContainer = new Map24.Webservices.Request.MapletRemoteControl( map );');
-  drupal_set_html_head('var firstResult = event.Alternatives[0];');
-  drupal_set_html_head('var lon = firstResult.Coordinate.Longitude;');
-  drupal_set_html_head('var lat = firstResult.Coordinate.Latitude;');
-
-  drupal_set_html_head('mrcContainer.push(');
-  drupal_set_html_head('new Map24.Webservices.MRC.SetMapView({');
-  drupal_set_html_head('Coordinates: new Map24.Coordinate( lon, lat ),');
-  drupal_set_html_head('ClippingWidth: new Map24.Webservices.ClippingWidth(');
-  drupal_set_html_head('{ MinimumWidth: 250 }');
-  drupal_set_html_head(')');
-  drupal_set_html_head('})');
-  drupal_set_html_head(');');
-  drupal_set_html_head('map.Webservices.sendRequest( mrcContainer );');
-  drupal_set_html_head('}');
-  drupal_set_html_head('}');
-
-  drupal_set_html_head('</script>');
-
-  $page.='<body onload=\'goMap24()\'>';
-
-   // Show menu Bar
-  $page .= '<br/>';
-  $page .= '<table width="100%" border=0>';
-  $page .= '<tr>';
-
-  $page .= '<td valign="left">';
-  $page .= '<b>'.t('Address: ').$street.', '.$city.', '.$country.'</b>';
-  $page .= '</td>';
-
-  $page .= '<td  valign="right">';
-  $page.=' <input type="submit" value="'.t('Find Address').'" onclick="return geocode(\''.$street.','.$city.','.$country.'\')">';
-  $page .= '</td>';
-
-  $page .= '<td valign="right">';
-  if ($mid=='') {
-     $page .= '<form action="'.url(URL_FAMILY_VIEW.'/'.$fid).'" method="POST">';
-  }
-  else {
-     $page .= '<form action="'.url(URL_MEMBER_VIEW.'/'.$mid).'" method="POST">';
-     $page .= '<input type="hidden" name="fid" value="'.$fid.'" />';
-  }
-  $page .= '<input type="submit" name="commit" value="'.t('Return').'" />';
-  $page .= '</form>';
-  $page .= '</td>';
-
-  $page .= '</tr>';
-  $page .= '</table>';
-
-  $page .= '<br/>';
-  $page .= '<div id="maparea"></div>';
-  $page .= '</body>';
-
-  $page .= '</div>';
+	$page .= '<form name="AddressbookForm" method="POST" >';	
+	$page .= '<div class="addressbook">';
   
-  return $page;
+  
+	drupal_set_html_head('');
+	drupal_set_html_head('<script type=\'text/javascript\' src=\'http://api.map24.com/ajax/1.2/?init=default\'></script>');
+	drupal_set_html_head('<script type=\'text/javascript\'>');
+	drupal_set_html_head('var map = null;');
+
+	drupal_set_html_head('function goMap24() {');
+	drupal_set_html_head('var mrcContainer = new Map24.Webservices.Request.MapletRemoteControl(map);');
+
+	drupal_set_html_head('map = Map24.Webservices.getMap24Application({');
+	drupal_set_html_head('AppKey: "'.variable_get('addressbook_map_key', '').'",');
+	drupal_set_html_head('MapArea: document.getElementById( "maparea" ),');
+	drupal_set_html_head('Maptype: "JAVA",');
+	drupal_set_html_head('MapWidth: 640,');
+	drupal_set_html_head('MapHeight: 480,');
+	drupal_set_html_head('MRC: mrcContainer');
+	drupal_set_html_head('});');
+	drupal_set_html_head('geocode(\''.$data->street.','.$data->city.','.$data->country.'\')');
+	drupal_set_html_head('}');
+
+	drupal_set_html_head('function geocode( addressString ){');
+	drupal_set_html_head('map.Webservices.sendRequest(');
+	drupal_set_html_head('new Map24.Webservices.Request.MapSearchFree(map, {');
+	drupal_set_html_head('SearchText: addressString,');
+	drupal_set_html_head('MaxNoOfAlternatives: 50');
+	drupal_set_html_head('})');
+	drupal_set_html_head(');');
+
+	drupal_set_html_head('map.onMapSearchFree = function( event ){');
+	drupal_set_html_head('var mrcContainer = new Map24.Webservices.Request.MapletRemoteControl( map );');
+	drupal_set_html_head('var firstResult = event.Alternatives[0];');
+	drupal_set_html_head('var lon = firstResult.Coordinate.Longitude;');
+	drupal_set_html_head('var lat = firstResult.Coordinate.Latitude;');
+
+	drupal_set_html_head('mrcContainer.push(');
+	drupal_set_html_head('new Map24.Webservices.MRC.SetMapView({');
+	drupal_set_html_head('Coordinates: new Map24.Coordinate( lon, lat ),');
+	drupal_set_html_head('ClippingWidth: new Map24.Webservices.ClippingWidth(');
+	drupal_set_html_head('{ MinimumWidth: 250 }');
+	drupal_set_html_head(')');
+	drupal_set_html_head('})');
+	drupal_set_html_head(');');
+	drupal_set_html_head('map.Webservices.sendRequest( mrcContainer );');
+	drupal_set_html_head('}');
+	drupal_set_html_head('}');
+
+	drupal_set_html_head('</script>');
+
+	$page.='<body onload=\'goMap24()\'>';
+
+	$page .= '<field>';
+
+	$page .= '<td valign="left">';
+	$page .= '<b>'.t('Address: ').$data->street.', '.$data->city.', '.$data->country.'</b>';
+	
+	$page .= '<br/>';
+	$page .= '<div id="maparea"></div>';
+	
+	$page .= '</field>';
+  
+  	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Back'));
+	
+	$page .= '</div>';
+	$page .= '</form>';
+	$page .= '</body>';
+		
+	return $page;
 }
 
 function addressbook_delete_view() {
@@ -1231,10 +1210,17 @@ function addressbook_delete_view() {
 	
 	$page .= '<form name="AddressbookForm" method="POST" >';	
 	$page .= '<div class="addressbook">';
-	$page .= '<br/>';
-	$page .= '<br/>';
 	
-	$page .= t("<h4>Are you sure?</h4>");
+	$page .= '<fieldset>';
+	
+	$page .= '<h4>';
+	if (($mid!=0) && ($fid!=0)) {
+		$page .= t("Delete selected member. Are you sure?");
+	} else {
+		$page .= t("Delete selected family. Are you sure?");
+	}
+	$page .= '</h4>';
+	$page .= t("<br/>");
 	
 	if (($fid!=0) && ($mid!=0)) {
 		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Yes'));
@@ -1243,6 +1229,8 @@ function addressbook_delete_view() {
 		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Yes'));
 		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('No'));
 	}
+
+	$page .= '</fieldset>' ;
 
 	$page .= '</div>';
 	$page .= '</form>'; 
