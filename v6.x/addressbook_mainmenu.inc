@@ -47,6 +47,7 @@ function addressbook_mainmenu() {
 	$page .= '<br/>';
 	
 	$page .= '<div class="admin-panel">';
+	
 	$page .= '<H3>';
 	$page .= t('Addressbook menu');
 	$page .= '</H3>';
