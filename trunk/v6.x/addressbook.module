@@ -36,11 +36,10 @@
 define('ADDRESSBOOK_VERSION' ,'4.0');
 
 // Addressbook module URLs.
-define('URL_ADDRESSBOOK',              'addressbook');
-define('URL_ADDRESSBOOK_FAMILY',       'addressbook/family');
-define('URL_ADDRESSBOOK_UPLOAD_CSV',   'addressbook/csv/upload');
-define('URL_ADDRESSBOOK_DOWNLOAD_CSV', 'addressbook/csv/download');
-define('URL_ADDRESSBOOK_EMAIL',        'addressbook/email');
+define('URL_ADDRESSBOOK',           'addressbook');
+define('URL_ADDRESSBOOK_FAMILY',    'addressbook/family');
+define('URL_ADDRESSBOOK_UPLOAD',	'addressbook/upload');
+define('URL_ADDRESSBOOK_DOWNLOAD', 	'addressbook/download');
 
 define('ADDRESSBOOK_IMAGE_DIR',        file_directory_path().'/addressbook');
 define('ADDRESSBOOK_THUMBNAILS_DIR',   file_directory_path().'/addressbook/thumbnails');
@@ -53,8 +52,8 @@ define('ADDRESSBOOK_THUMBNAILS_DIR',   file_directory_path().'/addressbook/thumb
 module_load_include('inc', 'addressbook', 'addressbook_utils'); 
 module_load_include('inc', 'addressbook', 'addressbook_mainmenu');
 module_load_include('inc', 'addressbook', 'addressbook_family');
-module_load_include('inc', 'addressbook', 'addressbook_member');
-module_load_include('inc', 'addressbook', 'addressbook_csv');
+module_load_include('inc', 'addressbook', 'addressbook_csv_upload');
+module_load_include('inc', 'addressbook', 'addressbook_csv_download');
 
 // ADD Java Scripts files
 drupal_add_js(drupal_get_path('module', 'addressbook'). '/js/addressbook.js');
@@ -115,17 +114,17 @@ function addressbook_menu() {
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_ADDRESSBOOK_UPLOAD_CSV] = array(
+  $items[URL_ADDRESSBOOK_UPLOAD] = array(
                    'title' => 'Addressbook CSV upload',
                    'page callback' => 'addressbook_upload_csv',
-                   'access arguments' => array('add address'),
+                   'access arguments' => array('administer site configuration'),
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_ADDRESSBOOK_DOWNLOAD_CSV] = array(
+  $items[URL_ADDRESSBOOK_DOWNLOAD] = array(
                    'title' => 'Addressbook CSV download',
                    'page callback' => 'addressbook_download_csv',
-                   'access arguments' => array('add address'),
+                   'access arguments' => array('administer site configuration'),
                    'type' => MENU_CALLBACK,
                 );
 

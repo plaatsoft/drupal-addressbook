@@ -72,14 +72,14 @@ function addressbook_mainmenu() {
    if (user_access('access administration pages')) {
    
 		$page .= '<dt>';
-		$page .= '<a href="'.url(URL_ADDRESSBOOK_UPLOAD_CSV).'">Upload addressbook data</a>';
+		$page .= '<a href="'.url(URL_ADDRESSBOOK_UPLOAD).'">Upload addressbook data</a>';
 		$page .= '</dt>';
 		$page .= '<dd>';
 		$page .= t('Upload addressbook data.');
 		$page .= '</dd>';
   
 		$page .= '<dt>';
-		$page .= '<a href="'.url(URL_ADDRESSBOOK_DOWNLOAD_CSV).'">Download addressbook data</a>';
+		$page .= '<a href="'.url(URL_ADDRESSBOOK_DOWNLOAD).'">Download addressbook data</a>';
 		$page .= '</dt>';
 		$page .= '<dd>';
 		$page .= t('Download addressbook data.');
