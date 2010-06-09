@@ -111,7 +111,7 @@ function addressbook_process_csv($filename) {
   $theData = fgets($fh);
   $line_counter++;
   
-  while ($theData!='') {
+  while ($theData!="") {
     $line_error=0;
 
 	// *******************************
@@ -139,9 +139,8 @@ function addressbook_process_csv($filename) {
     $data["mobile"]=$value[8];
 	
     $data["email"]=$value[9];
-	
-    list($day, $month, $year) = split('[/.-]', $value[10]);
-    $data["birth_day"]=$year.'-'.$month.'-'.$day;
+
+    $data["birthday"]=$value[10];
 
     $tmp=str_replace(array("~~"), "\r\n", $value[11]);
     $data["work"]=$tmp;
@@ -183,23 +182,17 @@ function addressbook_process_csv($filename) {
 		$line_error=1;
     }
 	
-	if ($line_error==1) {
-		// Error, skip line!
-		continue;
-	}
+	// *******************************
+    // Process data
+    // *******************************
 
-	// *******************************
-    // Update database
-    // *******************************
+	if ($line_error==0) {
 	
-    $data["fid"]=addressbook_family_csv_update($data);
-	addressbook_member_csv_update($data);     
-	
-	// *******************************
-    // Get next line.
-    // *******************************
+		$data["fid"]=addressbook_family_csv_update($data);
+		addressbook_member_csv_update($data);     
+	}
 	   
-    $theData = fgets($fh);
+	$theData = fgets($fh);
 	$line_counter++; 
   }
   fclose($fh);
@@ -339,7 +332,7 @@ function addressbook_member_csv_update($data) {
 		$query .= '"'.$data["first_name"].'",';
 		$query .= '"'.$data["middle_name"].'",';
 		$query .= '"'.$data["last_name"].'",';
-		$query .= '"'.$data["birthday"].'",';
+		$query .= '"'.addressbook_convert_date_reverse($data["birthday"]).'",';
 		$query .= '"'.$data["mobile"].'",';
 		$query .= '"'.$data["email"].'",';
 		$query .= '"'.$data["notes"].'",';
@@ -381,14 +374,14 @@ function addressbook_member_csv_update($data) {
 		$query .= 'first_name = "'.$data["first_name"].'",';
 		$query .= 'middle_name = "'.$data["middle_name"].'",';
 		$query .= 'last_name = "'.$data["last_name"].'",';
-		$query .= 'birth_day = "'.$data["birthday"].'",';
+		$query .= 'birth_day = "'.addressbook_convert_date_reverse($data["birthday"]).'",';
 		$query .= 'mobile = "'.$data["mobile"].'",';
 		$query .= 'email = "'.$data["email"].'",';
 		$query .= 'notes = "'.$data["notes"].'",';
 		$query .= 'work = "'.$data["work"].'",';
 		$query .= 'active_roles = "'.$data["active_roles"].'",';
 		$query .= 'wanted_roles = "'.$data["wanted_roles"].'",';
-		$query .= 'uid = "'.$data["owner"].'",';
+		$query .= 'fid = "'.$data["fid"].'",';
 		$query .= 'last_updated = SYSDATE() WHERE mid='.$tmp->mid;
 
 		db_query($query);		
