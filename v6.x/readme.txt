@@ -66,21 +66,31 @@ Release Notes
 - Splits functionality over more files.
 - Added JaveScript and CSS file
 - Added HTML based on active drupal template.
+- Remove all buttons with links. Better look and feel.
 - Rebuild family page from cratch.
+	- Family List and search. OK
 	- Insert Family. OK
 	- Update Family. OK
-	- Delete Family. ? (Clean up members and pictures)
+	- Delete Family. OK
 - Rebuild member page from cratch.
 	- Insert member. OK
  	- Update member. OK
-	- Delete member. ? (Clean up pictures)
+	- Delete member. OK
 - Descope group email functionality.
 
-05-06-2010 v6.x-4.1
+09-06-2010 v6.x-4.1
 - Improve member and family delete. Delete all related data.
+- Rebuild csv upload functionality from cratch.
+- Added breadcrumb menu.
+- Change Applications URLs.
+- Descope member list and search functionality.
+
+TODO: 
+- CSV upload data store
+- Member list
+
+
 
 Known Minor Issues
 ------------------
-- Image is not removed when family member is deleted
-- Image is not removed when family is deleted
 - Role definitions may not contain spaces

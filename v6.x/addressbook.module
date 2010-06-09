@@ -33,11 +33,12 @@
 // ##################################################################################
 
 // Module version
-define('ADDRESSBOOK_VERSION' ,'4.0');
+define('ADDRESSBOOK_VERSION' ,t('v4.1'));
 
 // Addressbook module URLs.
 define('URL_ADDRESSBOOK',           'addressbook');
 define('URL_ADDRESSBOOK_FAMILY',    'addressbook/family');
+define('URL_ADDRESSBOOK_MEMBER',    'addressbook/member');
 define('URL_ADDRESSBOOK_UPLOAD',	'addressbook/upload');
 define('URL_ADDRESSBOOK_DOWNLOAD', 	'addressbook/download');
 
@@ -52,6 +53,7 @@ define('ADDRESSBOOK_THUMBNAILS_DIR',   file_directory_path().'/addressbook/thumb
 module_load_include('inc', 'addressbook', 'addressbook_utils'); 
 module_load_include('inc', 'addressbook', 'addressbook_mainmenu');
 module_load_include('inc', 'addressbook', 'addressbook_family');
+module_load_include('inc', 'addressbook', 'addressbook_member');
 module_load_include('inc', 'addressbook', 'addressbook_csv_upload');
 module_load_include('inc', 'addressbook', 'addressbook_csv_download');
 
@@ -114,21 +116,28 @@ function addressbook_menu() {
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_ADDRESSBOOK_UPLOAD] = array(
+	$items[URL_ADDRESSBOOK_MEMBER] = array(
+                   'title' => 'Addressbook data',
+                   'page callback' => 'addressbook_member',
+                   'access arguments' => array('view addressbook'),
+                   'type' => MENU_CALLBACK,
+                );
+				
+	$items[URL_ADDRESSBOOK_UPLOAD] = array(
                    'title' => 'Addressbook CSV upload',
                    'page callback' => 'addressbook_upload_csv',
                    'access arguments' => array('administer site configuration'),
                    'type' => MENU_CALLBACK,
                 );
 
-  $items[URL_ADDRESSBOOK_DOWNLOAD] = array(
+	$items[URL_ADDRESSBOOK_DOWNLOAD] = array(
                    'title' => 'Addressbook CSV download',
                    'page callback' => 'addressbook_download_csv',
                    'access arguments' => array('administer site configuration'),
                    'type' => MENU_CALLBACK,
                 );
 
-   $items['admin/settings/addressbook'] = array(
+	$items['admin/settings/addressbook'] = array(
                    'title' => 'Addressbook',
                    'description' => 'Settings of addressbook.',
                    'page callback' => 'drupal_get_form',
