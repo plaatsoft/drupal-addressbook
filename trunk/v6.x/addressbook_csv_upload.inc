@@ -110,8 +110,8 @@ function addressbook_process_csv($filename) {
 
   $theData = fgets($fh);
   $line_counter++;
-  while ($theData!='')
-  {
+  
+  while ($theData!='') {
     $line_error=0;
 
 	// *******************************
@@ -183,12 +183,6 @@ function addressbook_process_csv($filename) {
 		$line_error=1;
     }
 	
-	if ($data["city"]=='') {
-		$msg = t('Line').' ['.$line_counter.'] '.t('city empty');
-		drupal_set_message($msg, 'error');
-		$line_error=1;
-    }
-	
 	if ($line_error==1) {
 		// Error, skip line!
 		continue;
@@ -198,20 +192,20 @@ function addressbook_process_csv($filename) {
     // Update database
     // *******************************
 	
-    addressbook_family_csv_update($data);
+    $data["fid"]=addressbook_family_csv_update($data);
 	addressbook_member_csv_update($data);     
 	
 	// *******************************
     // Get next line.
     // *******************************
-	
-	$line_counter++;    
+	   
     $theData = fgets($fh);
+	$line_counter++; 
   }
   fclose($fh);
 
   // Delete csv file
-  unlink($myFile);
+  unlink($filename);
 }
 
 
@@ -232,13 +226,19 @@ function addressbook_family_csv_update($data) {
 			street like "'.$data["street"].'"';
 			
 	$queryResult = db_query($query);
-	$data = db_fetch_object($queryResult);
-	$fid=$data->fid;
-
-	if ($fid=="") {
+	$tmp = db_fetch_object($queryResult);
+	
+	if ($tmp->fid=="") {
 		
-		$query  = 'INSERT INTO addressbook_family (middle_name, last_name, street, zipcode, city, ';
-		$query .= 'country, telephone, uid, last_updated) VALUES (';
+		$query  = 'INSERT INTO addressbook_family 
+					(middle_name, 
+					last_name, 
+					street, 
+					zipcode, 
+					city,
+					country, 
+					telephone, 
+					last_updated) VALUES (';
 		$query .= '"'.$data["middle_name"].'",';
 		$query .= '"'.$data["last_name"].'",';
 		$query .= '"'.$data["street"].'",';
@@ -246,26 +246,27 @@ function addressbook_family_csv_update($data) {
 		$query .= '"'.$data["city"].'",';
 		$query .= '"'.$data["country"].'",';
 		$query .= '"'.$data["telephone"].'",';
-		$query .= '"'.$data["owner"].'",';
 		$query .= 'SYSDATE() )';
 
 		db_query($query);
 	
 		// Check new family entry.
-		$query = 'select fid from addressbook_family where 
-					zipcode like "'.$data["zipcode"].'" and 
-					street like "'.$data["street"].'"';
+		$query = '	select 
+						fid 
+					from 
+						addressbook_family 
+					where 
+						zipcode like "'.$data["zipcode"].'" and 
+						street like "'.$data["street"].'"';
 			
 		$queryResult = db_query($query);
-		$data = db_fetch_object($queryResult);
-			
-		$_SESSION['fid']=$data->fid;
+		$tmp = db_fetch_object($queryResult);
 		
 		// *****************************
 		// create message
 		// *****************************
 	
-		$msg .= t('Family').' '.$data->fid.' '.t('created!');
+		$msg .= t('Family').' '.$tmp->fid.' '.t('created!');
 		drupal_set_message($msg, 'status');
 		watchdog('user', $msg);
 		
@@ -276,7 +277,7 @@ function addressbook_family_csv_update($data) {
 		// *****************************
 	
 		$query = 'UPDATE addressbook_family SET ';
-		$query .= 'middle_name = "'.$data["middle_name"].'",';
+		$query .= 'middle_name = "'.$data['middle_name'].'",';
 		$query .= 'last_name = "'.$data["last_name"].'",';
 		$query .= 'street = "'.$data["street"].'",';
 		$query .= 'zipcode = "'.$data["zipcode"].'",';
@@ -285,7 +286,7 @@ function addressbook_family_csv_update($data) {
 		$query .= 'telephone = "'.$data["telephone"].'",';
 		$query .= 'uid = "'.$data["owner"].'",';
 		$query .= 'last_updated = SYSDATE() ';
-		$query .= 'WHERE fid='.$data["fid"];
+		$query .= 'WHERE fid='.$tmp->fid;
 
 		db_query($query);
 	
@@ -293,10 +294,112 @@ function addressbook_family_csv_update($data) {
 		// create message
 		// *****************************
 	
-		$msg .= t('Family').' '. $fid.' '.t('updated!');
+		$msg .= t('Family').' '.$tmp->fid.' '.t('updated');
 		drupal_set_message($msg, 'status');
 		watchdog('user', $msg);
 		
 	}
-	return false;
+	return $tmp->fid;
+}
+
+
+function addressbook_member_csv_update($data) {
+
+	// Check if user allready exist. Protect against reload button
+	$query  = '
+		select
+			a.mid as mid 
+		from 
+			addressbook_member a 
+		where ' ;
+	$query .= ' a.first_name="'.$data["first_name"].'" and ';
+	$query .= ' a.middle_name="'.$data["middle_name"].'" and ';
+	$query .= ' a.last_name="'.$data["last_name"].'"';
+	
+	addressbook_debug_sql($query);
+	$queryResult = db_query($query);     
+	$tmp = db_fetch_object($queryResult);
+	
+	if ($tmp->mid=="") {
+	
+		$query  = '
+			INSERT INTO addressbook_member (
+				first_name, 
+				middle_name, 
+				last_name, 
+				birth_day, 
+				mobile, 
+				email, 
+				notes, 
+				work, 
+				active_roles, 
+				wanted_roles, 
+				fid,
+				last_updated) VALUES (';
+		$query .= '"'.$data["first_name"].'",';
+		$query .= '"'.$data["middle_name"].'",';
+		$query .= '"'.$data["last_name"].'",';
+		$query .= '"'.$data["birthday"].'",';
+		$query .= '"'.$data["mobile"].'",';
+		$query .= '"'.$data["email"].'",';
+		$query .= '"'.$data["notes"].'",';
+		$query .= '"'.$data["work"].'",';
+		$query .= '"'.$data["active_roles"].'",';
+		$query .= '"'.$data["wanted_roles"].'",';
+		$query .= '"'.$data["fid"].'",';
+		$query .= 'SYSDATE() )';
+		
+		addressbook_debug_sql($query);
+		db_query($query);
+		
+		$query  = '
+		select
+			a.mid as mid 
+		from 
+			addressbook_member a 
+		where ' ;
+		$query .= ' a.first_name="'.$data["first_name"].'" and ';
+		$query .= ' a.middle_name="'.$data["middle_name"].'" and ';
+		$query .= ' a.last_name="'.$data["last_name"].'"';
+	
+		addressbook_debug_sql($query);
+		$queryResult = db_query($query);     
+		$tmp = db_fetch_object($queryResult);
+		
+		// *****************************
+		// create message
+		// *****************************
+	
+		$msg .= t('Member').' '.$tmp->mid.' '.t('created!');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);
+		
+	
+	} else {
+	
+		$query = 'UPDATE addressbook_member SET ';
+		$query .= 'first_name = "'.$data["first_name"].'",';
+		$query .= 'middle_name = "'.$data["middle_name"].'",';
+		$query .= 'last_name = "'.$data["last_name"].'",';
+		$query .= 'birth_day = "'.$data["birthday"].'",';
+		$query .= 'mobile = "'.$data["mobile"].'",';
+		$query .= 'email = "'.$data["email"].'",';
+		$query .= 'notes = "'.$data["notes"].'",';
+		$query .= 'work = "'.$data["work"].'",';
+		$query .= 'active_roles = "'.$data["active_roles"].'",';
+		$query .= 'wanted_roles = "'.$data["wanted_roles"].'",';
+		$query .= 'uid = "'.$data["owner"].'",';
+		$query .= 'last_updated = SYSDATE() WHERE mid='.$tmp->mid;
+
+		db_query($query);		
+		addressbook_debug_sql($query);
+
+		// *****************************
+		// create message
+		// *****************************
+	
+		$msg .= t('Member').' '.$tmp->mid.' '.t('updated');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);	
+	}	
 }
