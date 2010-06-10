@@ -1,6 +1,5 @@
 <?php
 
-
 /** 
  *  Addressbook module for drupal 
  *
