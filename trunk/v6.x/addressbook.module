@@ -342,7 +342,19 @@ function addressbook_block($op='list', $delta=0) {
       $current_day=date('-m-d');
       $current_time=date('H');
 
-      $query='SELECT mid, first_name, middle_name, last_name, email, birth_day FROM {addressbook_member} WHERE birth_day LIKE "%'.$current_day.'"';
+      $query='
+			SELECT 
+				mid, 
+				first_name, 
+				middle_name, 
+				last_name, 
+				email, 
+				birth_day 
+			FROM 
+				{addressbook_member} 
+			WHERE 
+				birth_day LIKE "%'.$current_day.'"';
+				
       $queryResult = db_query($query);
       while ($data = db_fetch_object($queryResult)) {
 
@@ -351,7 +363,7 @@ function addressbook_block($op='list', $delta=0) {
         $user_age  = date('Y')-$year;
 
         $name=addressbook_view_name($data->first_name,$data->middle_name,$data->last_name,true,false,true);
-        $block_content .= l( $name.' ['.$user_age.'] ',URL_MEMBER_VIEW.'/'.$data->mid) . '<br />';
+        $block_content .= l( $name.' ['.$user_age.'] ',URL_ADDRESSBOOK_MEMBER.'/'.$data->mid) . '<br />';
       }
     }
 

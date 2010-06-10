@@ -33,7 +33,7 @@
 // StateMachine
 // *********************************************************************************
  
-function addressbook_member($fid=0) {
+function addressbook_member($mid=0) {
 
 	//echo var_dump($_POST);
 	
@@ -43,6 +43,14 @@ function addressbook_member($fid=0) {
 	
 	$Action=htmlentities($_POST['Action']);
 	addressbook_debug_param("Action", $Action);
+		
+	if ($mid==0) {
+		$mid=$_POST["mid"];
+	} else {
+		$Action="MemberView";
+	}
+	$_SESSION['mid']=$mid;
+	addressbook_debug_param("mid", $mid);
 		
 	// *****************************
 	// Process statemachine
@@ -83,7 +91,7 @@ function addressbook_member($fid=0) {
 			$page = addressbook_member_view(false);
 			break;
 				
-		default: 
+		default:
 			$page = addressbook_member_list();
 			break;
 	}
@@ -276,7 +284,10 @@ function addressbook_member_view( $readonly=true )  {
 	
 	$mid=$_POST["mid"];
 	if ($mid=="") {
-		$mid=0;
+		$mid=$_SESSION["mid"];
+		if ($mid=="") {
+			$mid=0;
+		}
 	}
 	addressbook_debug_param("mid", $mid);
 	
