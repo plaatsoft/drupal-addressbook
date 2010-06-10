@@ -61,35 +61,26 @@ Release Notes
 23-10-2009 v6.x-3.7
 - Hot security fix to protect against XSS (Cross Site Scripting) hacking.
 
-29-05-2010 v6.x-4.0
+04-05-2010 v6.x-4.0
 - Added main menu.
-- Splits functionality over more files.
+- Split functionality over more files.
 - Added JaveScript and CSS file
 - Added HTML based on active drupal template.
 - Remove all buttons with links. Better look and feel.
-- Rebuild family page from cratch.
-	- Family List and search. OK
-	- Insert Family. OK
-	- Update Family. OK
-	- Delete Family. OK
-- Rebuild member page from cratch.
-	- Insert member. OK
- 	- Update member. OK
-	- Delete member. OK
+- Rebuild family and search functionality pages from cratch.
+- Rebuild member pages from cratch
 - Descope group email functionality.
 
-09-06-2010 v6.x-4.1
+11-06-2010 v6.x-4.1
 - Improve member and family delete. Delete all related data.
 - Rebuild csv upload functionality from cratch.
-- Added breadcrumb menu.
-- Change Applications URLs.
-- Descope member list and search functionality.
+- Rebuild member list and search functionality.
+- Rebuild map page functionality.
+- Added breadcrumb menu to all pages.
+- Improve modules URLs.
 
-TODO: 
-- CSV upload data store
-- Member list
-
-
+TODO
+- Birthday overview with link
 
 Known Minor Issues
 ------------------

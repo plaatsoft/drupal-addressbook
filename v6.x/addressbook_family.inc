@@ -214,7 +214,7 @@ function addressbook_family_list() {
 	addressbook_breadcrumb($node);
 
   	$page .= '<fieldset>' ;
-	$page .= '<legend>'.t('Filteren').'</legend>';
+	$page .= '<legend>'.t('Filter').'</legend>';
 	
 	$page .= '<div class="form-item">';
 	$page .= '<label>'.t('Achternaam').' :</label>';
