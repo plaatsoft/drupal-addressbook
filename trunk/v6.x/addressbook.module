@@ -39,7 +39,7 @@ define('ADDRESSBOOK_VERSION' ,t('v4.1'));
 define('URL_ADDRESSBOOK',           'addressbook');
 define('URL_ADDRESSBOOK_FAMILY',    'addressbook/family');
 define('URL_ADDRESSBOOK_MEMBER',    'addressbook/member');
-define('URL_ADDRESSBOOK_UPLOAD',	'addressbook/upload');
+define('URL_ADDRESSBOOK_UPLOAD',	   'addressbook/upload');
 define('URL_ADDRESSBOOK_DOWNLOAD', 	'addressbook/download');
 
 define('ADDRESSBOOK_IMAGE_DIR',        file_directory_path().'/addressbook');
@@ -54,8 +54,10 @@ module_load_include('inc', 'addressbook', 'addressbook_utils');
 module_load_include('inc', 'addressbook', 'addressbook_mainmenu');
 module_load_include('inc', 'addressbook', 'addressbook_family');
 module_load_include('inc', 'addressbook', 'addressbook_member');
+module_load_include('inc', 'addressbook', 'addressbook_picture');
 module_load_include('inc', 'addressbook', 'addressbook_csv_upload');
 module_load_include('inc', 'addressbook', 'addressbook_csv_download');
+module_load_include('inc', 'addressbook', 'addressbook_map');
 
 // ADD Java Scripts files
 drupal_add_js(drupal_get_path('module', 'addressbook'). '/js/addressbook.js');
@@ -207,15 +209,6 @@ function addressbook_settings() {
      '#default_value' => variable_get('addressbook_show_thumbnails',0),
      '#options' => array( 0 => t('No'), 1 => t('Yes') ),
      '#description' => t('Enable / disable thumbnail pictures in family list and family member list.'));
-
-  $form['settings_general']['addressbook_wiki_edit_mode'] = array(
-     '#type' => 'select',
-     '#title' => t('Wiki edit mode'),
-     '#default_value' => variable_get('addressbook_wiki_edit_mode',0),
-     '#options' => array( 0 => t('Disable'), 1 => t('Enable') ),
-     '#description' => t('Enable (anyone can modify existing addresses), Disable (only owner can modify created addresses).'));
-
-
 
   $form['map24'] = array('#type' => 'fieldset', '#title' => t('Map settings'));
 
