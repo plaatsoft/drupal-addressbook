@@ -63,31 +63,11 @@ CREATE TABLE `addressbook_picture` (
   }
 }
 
-function addressbook_update_5300() {
+function addressbook_update_6041() {
   switch ($GLOBALS['db_type']) {
     case 'mysql':
     case 'mysqli':
-
-db_query("
-CREATE TABLE `addressbook_extention` (
-  `MID` int(11) NOT NULL COMMENT 'Member ID',
-  `STATUS` varchar(50) default NULL,
-  `REGION_NAME` date default NULL,
-  `SECTION` varchar(20) default NULL,
-  `SEX` varchar(10) default NULL,
-  `BIRTH_PLACE` varchar(50) default NULL,
-  `COVERMANCE_STATE` varchar(50) default NULL,
-  `CHURCH_STATE` varchar(50) default NULL,
-  `WANTED_ROLES` varchar(200) default NULL,
-  `UID` int(11) default NULL COMMENT 'User ID',
-  `FID` int(11) default NULL COMMENT 'Family ID',
-  `LAST_UPDATED` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `MIDDLE_NAME` varchar(10) default NULL,
-  `LAST_NAME` varchar(50) default NULL,
-  PRIMARY KEY  (`MID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-    ");
-
+	db_query("update `addressbook_picture` set fid=0 where mid!=0");
       break;
   }
 }

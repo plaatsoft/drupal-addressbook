@@ -761,7 +761,7 @@ function addressbook_member_view( $readonly=true )  {
 				b.telephone as telephone,
 				c.picture as picture
 			FROM 
-				addressbook_member a, addressbook_family b LEFT JOIN addressbook_picture c ON c.fid=b.fid and c.mid='.$mid.' 
+				addressbook_member a, addressbook_family b LEFT JOIN addressbook_picture c ON c.mid='.$mid.' 
 			WHERE 
 				b.fid=a.fid and
 				a.mid='.$mid;
@@ -840,6 +840,12 @@ function addressbook_member_view( $readonly=true )  {
 		}
 		
 		$page .= addressbook_form_item(
+			t("Member Id:"),
+			$mid,
+			t("Member id"), 
+			true );
+			
+		$page .= addressbook_form_item(
 			t("Owner:"),
 			addressbook_view_owner($data->uid, $readonly),
 			t("Drupal owner of this member"), 
@@ -895,11 +901,13 @@ function addressbook_member_view( $readonly=true )  {
 					t("General notes"), 
 					$readonly );
 
-	$page .= addressbook_form_item(
+	if (!addressbook_check_picture())  {
+		$page .= addressbook_form_item(
 					t("Image file"),
 					addressbook_input_picture($readonly),
 					t("Only jpg format is supported"), 
 					$readonly );
+	}
 		
 	$page .= addressbook_view_roles($data->active_roles,$data->wanted_roles, $readonly);
 
@@ -919,7 +927,10 @@ function addressbook_member_view( $readonly=true )  {
 	} else {
 		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberSave',t('Save'));
 		if ($mid!=0) {
-			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'Delete',t('Delete'));
+			if (addressbook_check_picture()) {
+				$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'PictureDelete',t('Delete Picture'));
+			}
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Delete Member'));
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('Cancel'));
 		} else {
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
@@ -1580,36 +1591,46 @@ function addressbook_picture_delete() {
 	// *****************************
 	
 	$fid=$_POST["fid"];
-	if ($fid=="") $fid=0;
+	if ($fid=="") {
+		$fid=0;
+	}
+	addressbook_debug_param("fid",$fid);
   
 	// get fid from session scope
 	$mid=$_POST["mid"];
-	if ($mid=="") $mid=0;
+	if ($mid=="") {
+		$mid=0;
+	}
+	addressbook_debug_param("mid",$mid);
 
 	if ($fid!=0) {
-	
-		$query = 'SELECT picture FROM addressbook_picture WHERE mid=.'.$mid.' and fid='.$fid;
-		$queryResult = db_query($query);
-		while ($data = db_fetch_object($queryResult)) {
-			unlink(ADDRESSBOOK_IMAGE_DIR.'/'.$data->picture);
-			unlink(ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture);
-		}
-		
-		$query = 'delete FROM addressbook_picture WHERE fid='.$fid.' and mid='.$mid;	
-		db_query($query);  
-	
-		// *****************************
-		// Create message
-		// *****************************
-	
-		$msg .= t('Picture is deleted!');
-		drupal_set_message($msg, 'status');
-		watchdog('user', $msg);
-		
-		return 0;
+		$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid;
+	} else {
+		$query = 'SELECT picture FROM addressbook_picture WHERE mid='.$mid;
 	}
 	
-	return 1;
+	// In old addressbook version more image could be connected to one family.
+	// therefor we must delete all related image files.
+	$queryResult = db_query($query);
+	while ($data = db_fetch_object($queryResult)) {
+		unlink(ADDRESSBOOK_IMAGE_DIR.'/'.$data->picture);
+		unlink(ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture);
+	}
+	
+	if ($fid!=0) {
+		$query = 'delete FROM addressbook_picture WHERE fid='.$fid;	
+	} else { 
+		$query = 'delete FROM addressbook_picture WHERE mid='.$mid;
+	}
+	db_query($query);  
+	
+	// *****************************
+	// Create message
+	// *****************************
+	
+	$msg .= t('Picture is deleted!');
+	drupal_set_message($msg, 'status');
+	watchdog('user', $msg);
 }
 
 // *********************************************************************************
