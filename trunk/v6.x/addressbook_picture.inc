@@ -59,7 +59,6 @@ function addressbook_check_picture() {
 	addressbook_debug_param("mid",$mid);
   
 	$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid.' and mid='.$mid;
-	//echo $query;
 	addressbook_debug_sql($query);
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
@@ -140,7 +139,6 @@ function addressbook_save_picture() {
 	// Fetch Image upload in a HTTP request
 	if ($_FILES['uploadedfile']['name']!='') {
 		  
-		 echo $_FILES['uploadedfile']['name'];
 		if ( (strstr($_FILES['uploadedfile']['name'],'.jpg')) || 
 				(strstr( $_FILES['uploadedfile']['name'],'.JPG')) ) {
 			
@@ -216,6 +214,8 @@ function addressbook_save_picture() {
 				}
 
 				if ($error==0)	{
+					chmod(ADDRESSBOOK_IMAGE_DIR.'/'.$filename, 0666);
+				
 					// Create thumbnails directory store
 					if(!is_dir(ADDRESSBOOK_THUMBNAILS_DIR)) {
 						if( !mkdir(ADDRESSBOOK_THUMBNAILS_DIR) )	{
@@ -263,6 +263,8 @@ function addressbook_save_picture() {
 					}
 
 					if ($error=='0') {
+				
+						chmod(ADDRESSBOOK_THUMBNAILS_DIR.'/'.$filename, 0666);
 				
 						$msg .= t('Foto is opgeslagen.');
 						drupal_set_message($msg, 'status');
