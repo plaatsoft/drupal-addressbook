@@ -552,29 +552,40 @@ function addressbook_input_picture($readonly) {
 }
 
 function addressbook_check_picture() {
+
+	$returnValue=false;
 	
 	// get fid from session scope
 	$fid=$_POST["fid"];
-	if ($fid=="") $fid=0;
+	if ($fid=="") {
+		$fid=0;
+	}
+	addressbook_debug_param("fid",$fid);
   
 	// get fid from session scope
 	$mid=$_POST["mid"];
-	if ($mid=="") $mid=0;
-	
+	if ($mid=="") {
+		$mid=0;
+	}
+	addressbook_debug_param("mid",$mid);
+  
 	$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid.' and mid='.$mid;
+	addressbook_debug_sql($query);
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
 	
-	// Construct a valid drupal path for the named file
-   $file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
-   $target = file_create_path($file);
+	if ($data->picture!="") {
+		// Construct a valid drupal path for the named file
+		$file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
+		$target = file_create_path($file);
 
-   // Check to see if the file exists
-   if (file_exists($target)) {
-   	  return true;
-   } else {
-      return false;
-   }
+		// Check to see if the file exists
+		if (file_exists($target)) {
+			$returnValue=true;
+		} 
+	}
+	
+	return $returnValue;
 }
 
 /**
@@ -623,10 +634,7 @@ function addressbook_save_picture() {
 	// get fid from session scope
 	$fid=$_POST["fid"];
 	if ($fid=="") {
-		$fid=$_SESSION["fid"];
-		if ($fid=="") {
-			$fid=0;
-		}
+		$fid=0;
 	}
 	addressbook_debug_param("fid",$fid);
   

@@ -49,6 +49,39 @@ function addressbook_member($fid=0) {
 	// *****************************
 	
 	switch ($Action) {
+	
+		case 'MemberList': 
+			$page = addressbook_member_list();
+			break;	
+							
+		case 'MemberEdit': 
+			$page = addressbook_member_view(false);
+			break;
+			
+		case 'MemberView': 
+			$page = addressbook_member_view(true);
+			break;
+			
+		case 'MemberSave': 
+			$error=addressbook_member_save();
+			if (!$error) {
+				addressbook_save_picture();
+				$page = addressbook_member_list();
+			} else {
+				$page = addressbook_member_view(false);
+			}
+			break;
+			
+		case 'MemberDelete': 
+			addressbook_delete_member();
+			addressbook_picture_delete();
+			$page = addressbook_member_list();
+			break;
+				
+		case 'PictureDelete': 
+			addressbook_picture_delete();
+			$page = addressbook_member_view(false);
+			break;
 				
 		default: 
 			$page = addressbook_member_list();
@@ -113,7 +146,7 @@ function addressbook_member_list( $sort='' )  {
 			b.telephone,
 			c.picture as picture
 		FROM 
-			addressbook_member a, addressbook_family b LEFT JOIN addressbook_picture c ON c.mid=a.mid 
+			addressbook_family b, addressbook_member a LEFT JOIN addressbook_picture c ON c.mid=a.mid 
 		WHERE 
 			a.fid=b.fid and
 			a.last_name LIKE "'.$parameter.'%" ';
@@ -200,9 +233,9 @@ function addressbook_member_list( $sort='' )  {
 		}
 
 		if ( variable_get('addressbook_show_thumbnails',0)==1 ) {
-			$page .= '<td>';
-			$page .= addressbook_load_picture($data->picture, 30, 25, "left", false);
-			$page .= '</td>';
+			$page_tmp .= '<td>';
+			$page_tmp .= addressbook_load_picture($data->picture, 30, 25, "left", false);
+			$page_tmp .= '</td>';
 		}
 		     
 		// Format Name
