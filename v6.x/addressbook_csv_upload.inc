@@ -35,9 +35,9 @@
  
  function addressbook_upload_csv() {
 
-	//only administrators can access this module
-	if (!user_access('access administration pages')) {
-		return drupal_access_denied();
+	//only addressbook administrators can access the functionality
+	if (!user_access('administer addressbook')) {
+		return drupal_access_denied();;
 	}
   		
 	// Breadcrumb menu
@@ -73,8 +73,8 @@
 function addressbook_save_csv() {
 
 	// Fetch Image upload in a HTTP request
-	if ($_FILES['uploadedfile']['tmp_name']!='') 
-	{
+	if ($_FILES['uploadedfile']['tmp_name']!='')  {
+	
 		if ( (strstr($_FILES['uploadedfile']['name'],'.csv')) || 
 		     (strstr( $_FILES['uploadedfile']['name'],'.CSV')) ) {
 	
@@ -199,6 +199,10 @@ function addressbook_process_csv($filename) {
 
   // Delete csv file
   unlink($filename);
+  
+  // Update drupal module variable
+  variable_set("addressbook_last_upload_date",date("d-m-Y"));
+	
 }
 
 

@@ -39,7 +39,7 @@ define('ADDRESSBOOK_VERSION' ,t('v4.1'));
 define('URL_ADDRESSBOOK',           'addressbook');
 define('URL_ADDRESSBOOK_FAMILY',    'addressbook/family');
 define('URL_ADDRESSBOOK_MEMBER',    'addressbook/member');
-define('URL_ADDRESSBOOK_UPLOAD',	   'addressbook/upload');
+define('URL_ADDRESSBOOK_UPLOAD',	'addressbook/upload');
 define('URL_ADDRESSBOOK_DOWNLOAD', 	'addressbook/download');
 
 define('ADDRESSBOOK_IMAGE_DIR',        file_directory_path().'/addressbook');
@@ -128,14 +128,14 @@ function addressbook_menu() {
 	$items[URL_ADDRESSBOOK_UPLOAD] = array(
                    'title' => 'Addressbook CSV upload',
                    'page callback' => 'addressbook_upload_csv',
-                   'access arguments' => array('administer site configuration'),
+                   'access arguments' => array('administer addressbook'),
                    'type' => MENU_CALLBACK,
                 );
 
 	$items[URL_ADDRESSBOOK_DOWNLOAD] = array(
                    'title' => 'Addressbook CSV download',
                    'page callback' => 'addressbook_download_csv',
-                   'access arguments' => array('administer site configuration'),
+                   'access arguments' => array('administer addressbook'),
                    'type' => MENU_CALLBACK,
                 );
 
@@ -161,7 +161,7 @@ function addressbook_menu() {
   */
 function addressbook_perm() {
 
-  return array('view addressbook','add address');
+  return array('view addressbook','edit addressbook',"administer addressbook" );
 }
 
 // ##################################################################################
@@ -210,6 +210,14 @@ function addressbook_settings() {
      '#options' => array( 0 => t('No'), 1 => t('Yes') ),
      '#description' => t('Enable / disable thumbnail pictures in family list and family member list.'));
 
+  $form['settings_general']['addressbook_last_upload_date'] = array(
+     '#type' => 'textfield',
+     '#title' => t('Date'),
+     '#default_value' => variable_get('addressbook_last_upload_date', ''),
+     '#description' => t("The last edit date (dd-mm-yyyy) of the addressbook data."),
+     '#maxlength' => '10',
+     '#size' => '11');
+	  
   $form['map24'] = array('#type' => 'fieldset', '#title' => t('Map settings'));
 
   $form['map24']['addressbook_map_link'] = array(
@@ -253,7 +261,6 @@ function addressbook_settings() {
      '#description' => t('Customize the body of the birthday e-mail, which is sent to members upon their birthday.') .' '. t('Available variables are:') .' %username, %user_age, %site_name');
 
   return system_settings_form($form);
-
 }
 
 // ##################################################################################
@@ -277,8 +284,19 @@ function addressbook_cron() {
       watchdog('cron', t('Addressbook birthday cron'));
 
       // Fetch all members with are celebrating there birtday
-      $query='SELECT first_name, middle_name, last_name, email, birth_day FROM {addressbook_member} WHERE birth_day LIKE "%'.$current_day.'"';
-      $queryResult = db_query($query);
+      $query='
+		SELECT 
+			first_name, 
+			middle_name, 
+			last_name, 
+			email, 
+			birth_day 
+		FROM 
+			{addressbook_member} 
+		WHERE 
+			birth_day LIKE "%'.$current_day.'"';
+      
+	  $queryResult = db_query($query);
       while ($data = db_fetch_object($queryResult)) {
         $username=view_name($data->first_name,$data->middle_name,$data->last_name,true);
 
@@ -373,7 +391,7 @@ function addressbook_block($op='list', $delta=0) {
         return;
     }
     // set up the block
-    $block['subject'] = 'Birthday today';
+    $block['subject'] = t('Birthdays today');
     $block['content'] = $block_content;
     return $block;
   }

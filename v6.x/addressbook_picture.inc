@@ -266,7 +266,10 @@ function addressbook_save_picture() {
 				
 						chmod(ADDRESSBOOK_THUMBNAILS_DIR.'/'.$filename, 0666);
 				
-						$msg .= t('Foto is opgeslagen.');
+						// Update drupal module variable
+						variable_set("addressbook_last_upload_date",date("d-m-Y"));
+  
+						$msg .= t('Image is saved');
 						drupal_set_message($msg, 'status');
 					}
 				}

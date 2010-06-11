@@ -36,20 +36,22 @@ function addressbook_mainmenu() {
 	$_SESSION['Action']="";
 	$_SESSION['Sort']="";
 	$_SESSION['Search']="";
+	$_SESSION['fid']="";
+	$_SESSION['mid']="";
 	
 	// Breadcrumb menu
 	addressbook_breadcrumb('');
 
 	$page .= '<div class="addressbook">';
 
-	drupal_set_title(t('Addressbook Menu').' '.ADDRESSBOOK_VERSION);
+	drupal_set_title(t('Addressbook').' '.ADDRESSBOOK_VERSION);
 
 	$page .= '<br/>';
 	
 	$page .= '<div class="admin-panel">';
 	
 	$page .= '<H3>';
-	$page .= t('Addressbook menu');
+	$page .= t('Menu');
 	$page .= '</H3>';
 	$page .= '<br/>';
 	
@@ -57,26 +59,29 @@ function addressbook_mainmenu() {
 	
 	$page .= '<dl class="admin-list">';
     
-	$page .= '<dt>';
-	$page .= l(t('View Family data'),URL_ADDRESSBOOK_FAMILY);
-	$page .= '</dt>';
-	$page .= '<dd>';
-	$page .= t('View family data of addressbook');
-	$page .= '</dd>';
+	if (user_access('view addressbook')) {
+	
+		$page .= '<dt>';
+		$page .= l(t('View Family data'),URL_ADDRESSBOOK_FAMILY);
+		$page .= '</dt>';
+		$page .= '<dd>';
+		$page .= t('View family data of addressbook');
+		$page .= '</dd>';
   
-	$page .= '<dt>';
-	$page .= l(t('View Member data'),URL_ADDRESSBOOK_MEMBER);
-	$page .= '</dt>';
-	$page .= '<dd>';
-	$page .= t('View member data of addressbook');
-	$page .= '</dd>';
+		$page .= '<dt>';
+		$page .= l(t('View Member data'),URL_ADDRESSBOOK_MEMBER);
+		$page .= '</dt>';
+		$page .= '<dd>';
+		$page .= t('View member data of addressbook');
+		$page .= '</dd>';
+	}
 	
 	$page .= '<dt>';
 	$page .= '&nbsp;';
 	$page .= '</dt>';
 	
 	//only administrators can access these pages.
-   if (user_access('access administration pages')) {
+   if (user_access('administer addressbook')) {
    
 		$page .= '<dt>';
 		$page .= '<a href="'.url(URL_ADDRESSBOOK_UPLOAD).'">Upload addressbook data</a>';
@@ -100,7 +105,7 @@ function addressbook_mainmenu() {
 	$page .= '<fieldset>' ;	
 	$page .= '<legend>'.t('Note').'</legend>';
 	$page .= '<div class="description">';
-	$page .= t('Database information is last update on <b>'.variable_get('addressbook_last_upload_date', '').'</b>');
+	$page .= t('Database information is last updated on <b>'.variable_get('addressbook_last_upload_date', '').'</b>');
 	$page .= '</div>';
 	$page .= '</fieldset>' ;
 	
