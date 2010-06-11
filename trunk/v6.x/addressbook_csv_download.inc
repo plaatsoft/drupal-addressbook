@@ -37,8 +37,8 @@ function addressbook_download_csv() {
 
   drupal_set_title(t('Addressbook csv download'));
 
-  //only administrators can access this module
-  if (!user_access('access administration pages')) {
+  //only addressbook administrators can access the functionality
+  if (!user_access('administer addressbook')) {
     return drupal_access_denied();;
   }
 

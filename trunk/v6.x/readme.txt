@@ -62,13 +62,14 @@ Release Notes
 - Hot security fix to protect against XSS (Cross Site Scripting) hacking.
 
 04-06-2010 v6.x-4.0
-- Added main menu.
-- Split functionality over more files.
+- Rebuild complet module from cratch. Goal improve look and feel. 
+- Added Main menu page including last edit timestamp.
+- Split module functionality over more files.
 - Added JaveScript and CSS file
-- Added HTML based on active drupal template.
-- Remove all buttons with links. Better look and feel.
+- Replace all html buttons with links. Much better look.
 - Rebuild family and search functionality pages from cratch.
 - Rebuild member pages from cratch
+- Rebuild picture functionality.
 - Descope group email functionality.
 
 11-06-2010 v6.x-4.1
@@ -76,11 +77,10 @@ Release Notes
 - Rebuild csv upload functionality from cratch.
 - Rebuild member list and search functionality.
 - Rebuild map page functionality.
-- Added breadcrumb menu to all pages.
+- Added breadcrumb menus to all pages.
 - Improve modules URLs.
-
-TODO
-- Birthday overview with link
+- Improve addressbook drupal permission rights. 
+- Rebuild birthday block overview
 
 Known Minor Issues
 ------------------

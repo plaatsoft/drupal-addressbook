@@ -524,20 +524,20 @@ function addressbook_check_number($str) {
 }
 
 /*
- * Function check user access
+ * Function check if user access has edit rights
  * @returns true if access is allowed else false 
  */
 function addressbook_check_access($uid) {
 
-   global $user;
-   $returnValue=false;
+	global $user;
+	$returnValue=false;
   
-   if ( user_access('add address')) {
+	if ( user_access('edit addressbook')) {
 		$returnValue=true;		
 	}
-	if (user_access('access administration pages')) {
+	if (user_access('administer addressbook')) {
 		$returnValue=true;
-   }
+	}
 	return $returnValue;
 }
 

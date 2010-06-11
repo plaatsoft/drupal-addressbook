@@ -159,7 +159,7 @@ function addressbook_family_list() {
 	// Get posted variables
 	// *****************************
 	
-   $Sort = $_POST["Sort"];
+	$Sort = $_POST["Sort"];
 	if ($Sort=="") {
 		$Sort=$_SESSION["Sort"];
 		if ($Sort=="") {
@@ -906,6 +906,9 @@ function addressbook_family_save() {
 			
 		$_SESSION['fid']=$data->fid;
 		
+		// Update drupal module variable
+		variable_set("addressbook_last_upload_date",date("d-m-Y"));
+  
 		// *****************************
 		// create message
 		// *****************************
@@ -934,6 +937,9 @@ function addressbook_family_save() {
 
 		db_query($query);
 	
+		// Update drupal module variable
+		variable_set("addressbook_last_upload_date",date("d-m-Y"));
+  
 		// *****************************
 		// create message
 		// *****************************
@@ -988,6 +994,9 @@ function addressbook_family_delete() {
 		$msg .= t('Family').' '.$fid.' '.t('deleted!');
 		drupal_set_message($msg, 'status');
 		watchdog('user', $msg);
+
+		// Update drupal module variable
+		variable_set("addressbook_last_upload_date",date("d-m-Y"));
 		
 		return 0;
 	}

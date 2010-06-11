@@ -84,7 +84,11 @@ function addressbook_member($mid=0) {
 			addressbook_picture_delete();
 			$page = addressbook_member_list();
 			break;
-				
+			
+		case 'Delete':
+		    $page = addressbook_delete_view();
+			break;
+					
 		case 'PictureDelete': 
 			addressbook_picture_delete();
 			$page = addressbook_member_view(false);
@@ -433,9 +437,14 @@ function addressbook_member_view( $readonly=true )  {
 	$page .= '<div class="addressbook">';
 		
 	// Breadcrumb menu
-	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
-	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyView', t("Family view"));
-	$node["child3"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberView', t("Member view"));
+	if ($fid!="") {
+		$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+		$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyView', t("Family view"));
+		$node["child3"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberView', t("Member view"));
+	} else {
+		$node["child1"] = l(t('Member list'),URL_ADDRESSBOOK_MEMBER);
+		$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberView', t("Member view"));
+	}
 	addressbook_breadcrumb($node);
 		
 	$page .= '<fieldset>' ;
@@ -752,6 +761,9 @@ function addressbook_member_save() {
 		addressbook_debug_sql($query);
 		$queryResult = db_query($query);     
 		$data = db_fetch_object($queryResult);
+
+		// Update drupal module variable
+		variable_set("addressbook_last_upload_date",date("d-m-Y"));
 			
 		// *****************************
 		// create message
@@ -781,6 +793,9 @@ function addressbook_member_save() {
 		db_query($query);		
 		addressbook_debug_sql($query);
 
+		// Update drupal module variable
+		variable_set("addressbook_last_upload_date",date("d-m-Y"));
+  
 		// *****************************
 		// create message
 		// *****************************
@@ -816,6 +831,9 @@ function addressbook_delete_member() {
 		$query = 'delete FROM addressbook_member WHERE mid='.$mid;		
 		db_query($query);  
 	
+		// Update drupal module variable
+		variable_set("addressbook_last_upload_date",date("d-m-Y"));
+  
 		// *****************************
 		// Create message
 		// *****************************
