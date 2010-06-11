@@ -80,7 +80,8 @@ Release Notes
 - Added breadcrumb menus to all pages.
 - Improve modules URLs.
 - Improve addressbook drupal permission rights. 
-- Rebuild birthday block overview
+- Rebuild birthday block overview/
+- Bugfix: Remove member is working again.
 
 Known Minor Issues
 ------------------

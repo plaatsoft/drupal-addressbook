@@ -62,9 +62,7 @@ function addressbook_check_picture() {
 	addressbook_debug_sql($query);
 	$queryResult = db_query($query);
 	$data = db_fetch_object($queryResult);
-	
-	//echo $data->picture;
-	
+		
 	if ($data->picture!="") {
 		// Construct a valid drupal path for the named file
 		$file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
@@ -297,6 +295,8 @@ function addressbook_picture_delete() {
 	// Get posted Inputs
 	// *****************************
 	
+	$found=false;
+	
 	$fid=$_POST["fid"];
 	if ($fid=="") {
 		$fid=0;
@@ -322,6 +322,7 @@ function addressbook_picture_delete() {
 	while ($data = db_fetch_object($queryResult)) {
 		unlink(ADDRESSBOOK_IMAGE_DIR.'/'.$data->picture);
 		unlink(ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture);
+		$found=true;
 	}
 	
 	if ($fid!=0) {
@@ -334,10 +335,11 @@ function addressbook_picture_delete() {
 	// *****************************
 	// Create message
 	// *****************************
-	
-	$msg .= t('Picture is deleted!');
-	drupal_set_message($msg, 'status');
-	watchdog('user', $msg);
+	if ($found) {
+		$msg .= t('Picture is deleted!');
+		drupal_set_message($msg, 'status');
+		watchdog('user', $msg);
+	}
 	
 	if ($fid!=0) {
 		return true;
