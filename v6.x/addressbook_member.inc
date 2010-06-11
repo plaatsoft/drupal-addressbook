@@ -41,15 +41,10 @@ function addressbook_member($mid=0) {
 	// *****************************
 	
 	$Action=htmlentities($_POST['Action']);
-	addressbook_debug_param("Action", $Action);
-		
-	if ($mid==0) {
-		$mid=$_POST["mid"];
-	} else {
+	if ($mid!=0) {
 		$Action="MemberView";
 	}
-	$_SESSION['mid']=$mid;
-	addressbook_debug_param("mid", $mid);
+	addressbook_debug_param("Action", $Action);
 		
 	// *****************************
 	// Process statemachine
@@ -79,14 +74,14 @@ function addressbook_member($mid=0) {
 			}
 			break;
 			
+		case 'MemberRemove':
+		    $page = addressbook_member_remove();
+			break;
+			
 		case 'MemberDelete': 
 			addressbook_delete_member();
 			addressbook_picture_delete();
 			$page = addressbook_member_list();
-			break;
-			
-		case 'Delete':
-		    $page = addressbook_delete_view();
 			break;
 					
 		case 'PictureDelete': 
@@ -287,16 +282,13 @@ function addressbook_member_view( $readonly=true )  {
 	
 	$mid=$_POST["mid"];
 	if ($mid=="") {
-		$mid=$_SESSION["mid"];
-		if ($mid=="") {
-			$mid=0;
-		}
+		$mid=0;
 	}
 	addressbook_debug_param("mid", $mid);
 	
 	$fid=$_POST["fid"];
 	if ($fid=="") {
-		$fid=$_SESSION['fid'];
+		$fid=$_SESSION["fid"];
 	}
 	addressbook_debug_param("fid", $fid);
 
@@ -572,7 +564,7 @@ function addressbook_member_view( $readonly=true )  {
 			if (addressbook_check_picture()) {
 				$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'PictureDelete',t('Delete Picture'));
 			}
-			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'Delete',t('Delete Member'));
+			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberRemove',t('Delete Member'));
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberView',t('Cancel'));
 		} else {
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
@@ -582,6 +574,52 @@ function addressbook_member_view( $readonly=true )  {
 	
 	$page .= '</div>';
 	$page .= '</form>';
+ 
+	return $page;
+}
+
+/** 
+  * Member remove - are you sure dialog
+  */
+function addressbook_member_remove() {
+
+	// *****************************
+	// Get posted Inputs
+	// *****************************
+	
+	$mid=$_POST["mid"];
+	if ($mid=="") {
+		$mid=0;
+	}
+	addressbook_debug_param("mid", $mid);
+	
+	// *****************************
+	// Create views
+	// *****************************
+	
+	$page .= '<form name="AddressbookForm" method="POST" >';	
+	$page .= '<div class="addressbook">';
+
+	// Breadcrumb menu
+	$node["child1"] = l(t('Member list'),URL_ADDRESSBOOK_MEMBER);
+	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberEdit', t("Member view"));
+	addressbook_breadcrumb($node);
+	
+	$page .= '<fieldset>';
+	
+	$page .= '<h4>';
+	$page .= t("Delete selected member. Are you sure?");
+	$page .= '</h4>';
+	
+	$page .= t("<br/>");
+	
+	$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Yes'));
+	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('No'));
+
+	$page .= '</fieldset>' ;
+
+	$page .= '</div>';
+	$page .= '</form>'; 
  
 	return $page;
 }
@@ -652,7 +690,6 @@ function addressbook_member_save() {
 			}
 		}
     
-
 		if ($_POST["wanted_$tmp[$i]"]=='on') {
 			if ($wanted_first=='1') {
 				$wanted_roles=$tmp[$i];
@@ -686,6 +723,12 @@ function addressbook_member_save() {
 		$error=1;
 	}
 
+	if ($fid==0) { 
+		$msg = t('Family id is null');
+		drupal_set_message( $msg, 'error');
+		$error=1;
+	}
+	
 	if ($error==1) {
 		return true;
 	}
@@ -750,7 +793,7 @@ function addressbook_member_save() {
 		
 		// Get new Member id
 		$query  = 'select ';
-		$query .= ' a.uid as uid ';
+		$query .= ' a.mid as mid ';
 		$query .= 'from ';
 		$query .= ' addressbook_member a ';
 		$query .= 'where ' ;
@@ -764,7 +807,10 @@ function addressbook_member_save() {
 
 		// Update drupal module variable
 		variable_set("addressbook_last_upload_date",date("d-m-Y"));
-			
+	
+		// Post created member id
+		$_POST["mid"]=$data->mid;
+		
 		// *****************************
 		// create message
 		// *****************************

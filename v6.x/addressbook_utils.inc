@@ -37,7 +37,7 @@
  * Print on screen POSTED parameters
  */
 function addressbook_debug_param($id, $param) {
-	//echo '['.$id.'='.$param.']';
+	echo '['.$id.'='.$param.']';
 }
 
 /**

@@ -32,7 +32,7 @@
 // StateMachine
 // *********************************************************************************
  
-function addressbook_family($fid=0) {
+function addressbook_family() {
 
 	//echo var_dump($_POST);
 	
@@ -43,6 +43,12 @@ function addressbook_family($fid=0) {
 	$Action=htmlentities($_POST['Action']);
 	addressbook_debug_param("Action", $Action);
 		
+	$fid=$_POST["fid"];
+	if ($fid!="") {
+		$_SESSION["fid"]=$fid;
+	}
+	addressbook_debug_param("fid", $fid);
+	
 	// *****************************
 	// Process statemachine
 	// *****************************
@@ -74,7 +80,11 @@ function addressbook_family($fid=0) {
 				$page.= addressbook_family_edit();
 			}
 			break;
-			 
+		
+		case 'FamilyRemove':
+		    $page = addressbook_family_remove();
+			break;
+	 
 		case 'FamilyDelete':
 			addressbook_family_delete();
 			addressbook_picture_delete();
@@ -107,6 +117,10 @@ function addressbook_family($fid=0) {
 			}
 			break;
 			
+		case 'MemberRemove':
+		    $page = addressbook_member_remove();
+			break;
+			
 		case 'MemberDelete': 
 			addressbook_delete_member();
 			addressbook_picture_delete();
@@ -119,10 +133,6 @@ function addressbook_family($fid=0) {
 			
 		case 'ShowMap':
 			$page = addressbook_map_view();
-			break;
-			
-		case 'Delete':
-		    $page = addressbook_delete_view();
 			break;
 			
 		case 'PictureDelete': 
@@ -339,13 +349,8 @@ function addressbook_family_view( $fid = -1)  {
 	
 	if ($fid==-1) {
 		$fid=$_POST["fid"];
-		if ($fid=="") {
-			$fid=$_SESSION["fid"];
-		}
 	}
 	addressbook_debug_param("fid", $fid);
-	
-	$_SESSION['fid']=$fid;
 		
 	// *****************************
 	// Query Database
@@ -701,10 +706,10 @@ function addressbook_family_edit()  {
 	
 	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilySave',t('Save'));
 	if (addressbook_check_picture()) {
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'PictureDelete',t('Delete Picture'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'PictureDelete',t('Remove Picture'));
 	}
 	if ($fid!=0) {
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'Delete',t('Delete Family'));
+		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyRemove',t('Remove Family'));
 	}
 	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyView',t('Cancel'));
 
@@ -716,22 +721,13 @@ function addressbook_family_edit()  {
 	return $page;
 }
 
-function addressbook_delete_view() {
+function addressbook_family_remove() {
 
 	// *****************************
 	// Get posted Inputs
 	// *****************************
 	
-	$mid=$_POST["mid"];
-	if ($mid=="") {
-		$mid=0;
-	}
-	addressbook_debug_param("mid", $mid);
-	
 	$fid=$_POST["fid"];
-	if ($fid=="") {
-		$fid=$_SESSION['fid'];
-	}
 	addressbook_debug_param("fid", $fid);
 	
 	// *****************************
@@ -741,38 +737,22 @@ function addressbook_delete_view() {
 	$page .= '<form name="AddressbookForm" method="POST" >';	
 	$page .= '<div class="addressbook">';
 	
+	// Breadcrumb menu
+	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
+	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyEdit', t("Family view"));
+	addressbook_breadcrumb($node);
+	
 	$page .= '<fieldset>';
-	
-	$page .= '<h4>';
-	if (($mid!=0) && ($fid!=0)) {
-	
-		// Breadcrumb menu
-		$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
-		$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyEdit', t("Family view"));
-		$node["child3"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberEdit', t("Member view"));
-		addressbook_breadcrumb($node);
-
-		$page .= t("Delete selected member. Are you sure?");
 		
-	} else {
-		// Breadcrumb menu
-		$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
-		$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyEdit', t("Family view"));
-		addressbook_breadcrumb($node);
-
-		$page .= t("Delete selected family. Are you sure?");
-	}
+	$page .= '<h4>';
+	$page .= t("Delete selected family. Are you sure?");
 	$page .= '</h4>';
-	$page .= t("<br/>");
 	
-	if (($fid!=0) && ($mid!=0)) {
-		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Yes'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('No'));
-	} else {
-		$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Yes'));
-		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('No'));
-	}
+	$page .= t("<br/>");
 
+	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Yes'));
+	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('No'));
+	
 	$page .= '</fieldset>' ;
 
 	$page .= '</div>';
@@ -904,7 +884,8 @@ function addressbook_family_save() {
 		$queryResult = db_query($query);
 		$data = db_fetch_object($queryResult);
 			
-		$_SESSION['fid']=$data->fid;
+		// Add to Post variable the new fid 
+		$_POST['fid']=$data->fid;
 		
 		// Update drupal module variable
 		variable_set("addressbook_last_upload_date",date("d-m-Y"));
