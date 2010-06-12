@@ -68,20 +68,18 @@ Release Notes
 - Added JaveScript and CSS file
 - Replace all html buttons with links. Much better look.
 - Rebuild family and search functionality pages from cratch.
-- Rebuild member pages from cratch
 - Rebuild picture functionality.
 - Descope group email functionality.
 
-11-06-2010 v6.x-4.1
-- Improve member and family delete. Delete all related data.
+12-06-2010 v6.x-4.1
 - Rebuild csv upload functionality from cratch.
 - Rebuild member list and search functionality.
 - Rebuild map page functionality.
 - Added breadcrumb menus to all pages.
 - Improve modules URLs.
 - Improve addressbook drupal permission rights. 
-- Rebuild birthday block overview/
-- Bugfix: Remove member is working again.
+- Improve member and family delete. Delete all related data.
+- Rebuild birthday block overview.
 
 Known Minor Issues
 ------------------
