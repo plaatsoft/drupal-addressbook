@@ -40,7 +40,7 @@ function addressbook_input_picture($id, $value, $readonly) {
 	}
 }
 
-function addressbook_check_picture() {
+function addressbook_check_family_picture() {
 
 	$returnValue=false;
 	
@@ -51,28 +51,55 @@ function addressbook_check_picture() {
 	}
 	addressbook_debug_param("fid",$fid);
   
-	// get fid from session scope
+	if ($fid!=0) {
+		$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid;
+		addressbook_debug_sql($query);
+		$queryResult = db_query($query);
+		$data = db_fetch_object($queryResult);
+		
+		if ($data->picture!="") {
+			// Construct a valid drupal path for the named file
+			$file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
+			$target = file_create_path($file);
+
+			// Check to see if the file exists
+			if (file_exists($target)) {
+				$returnValue=true;
+			} 
+		}
+	} 
+	
+	return $returnValue;
+}
+
+function addressbook_check_member_picture() {
+
+	$returnValue=false;
+	
+	// get mid from session scope
 	$mid=$_POST["mid"];
 	if ($mid=="") {
 		$mid=0;
 	}
 	addressbook_debug_param("mid",$mid);
-  
-	$query = 'SELECT picture FROM addressbook_picture WHERE fid='.$fid.' and mid='.$mid;
-	addressbook_debug_sql($query);
-	$queryResult = db_query($query);
-	$data = db_fetch_object($queryResult);
-		
-	if ($data->picture!="") {
-		// Construct a valid drupal path for the named file
-		$file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
-		$target = file_create_path($file);
 
-		// Check to see if the file exists
-		if (file_exists($target)) {
-			$returnValue=true;
-		} 
-	}
+	if ($mid!=0) {
+		$query = 'SELECT picture FROM addressbook_picture WHERE mid='.$mid;
+		addressbook_debug_sql($query);
+		$queryResult = db_query($query);
+		$data = db_fetch_object($queryResult);
+		
+		if ($data->picture!="") {
+			// Construct a valid drupal path for the named file
+			$file=ADDRESSBOOK_THUMBNAILS_DIR.'/'.$data->picture;
+			$target = file_create_path($file);
+
+			// Check to see if the file exists
+			if (file_exists($target)) {
+				$returnValue=true;
+			} 
+		}
+	} 
 	
 	return $returnValue;
 }

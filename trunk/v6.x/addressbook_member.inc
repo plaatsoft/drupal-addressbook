@@ -43,6 +43,7 @@ function addressbook_member($mid=0) {
 	$Action=htmlentities($_POST['Action']);
 	if ($mid!=0) {
 		$Action="MemberView";
+		$_POST["mid"]=$mid;
 	}
 	addressbook_debug_param("Action", $Action);
 		
@@ -113,7 +114,7 @@ function addressbook_member_list( $sort='' )  {
 	// *****************************
 	// Get posted variables
 	// *****************************
-	
+
 	$Sort = $_POST["Sort"];
 	if ($Sort=="") {
 		$Sort=$_SESSION["Sort"];
@@ -131,14 +132,20 @@ function addressbook_member_list( $sort='' )  {
 	// Query Database
 	// *****************************
 	
+		
 	if ($Search!="") {
 		$parameter=$Search;
 	} else {
-	   $parameter=$Sort;
+		if ($Sort==t("ALL")) {
+			$parameter="";
+		} else {
+			$parameter=$Sort;
+		}
 	}
-	
+	addressbook_debug_param("parameter", $parameter);
+
 	// Fetch member from database
-  $query  = '
+	$query  = '
 		SELECT 
 			a.mid,
 			a.first_name, 
@@ -535,7 +542,7 @@ function addressbook_member_view( $readonly=true )  {
 					t("General notes"), 
 					$readonly );
 
-	if (!addressbook_check_picture())  {
+	if (!addressbook_check_member_picture())  {
 		$page .= addressbook_form_item(
 					t("Image file"),
 					addressbook_input_picture("uploadedfile", $uploadedfile, $readonly),
@@ -561,7 +568,7 @@ function addressbook_member_view( $readonly=true )  {
 	} else {
 		$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberSave',t('Save'));
 		if ($mid!=0) {
-			if (addressbook_check_picture()) {
+			if (addressbook_check_member_picture()) {
 				$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'PictureDelete',t('Delete Picture'));
 			}
 			$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberRemove',t('Delete Member'));
@@ -604,6 +611,8 @@ function addressbook_member_remove() {
 	$node["child1"] = l(t('Member list'),URL_ADDRESSBOOK_MEMBER);
 	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'mid', $mid, 'MemberEdit', t("Member view"));
 	addressbook_breadcrumb($node);
+	
+	drupal_set_title(t('Addressbook member delete'));
 	
 	$page .= '<fieldset>';
 	

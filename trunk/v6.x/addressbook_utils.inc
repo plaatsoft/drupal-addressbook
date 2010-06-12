@@ -37,7 +37,7 @@
  * Print on screen POSTED parameters
  */
 function addressbook_debug_param($id, $param) {
-	echo '['.$id.'='.$param.']';
+	//echo '['.$id.'='.$param.']';
 }
 
 /**
@@ -105,8 +105,8 @@ function addressbook_view_timestamp($last_updated) {
 
 function addressbook_sortbar($Sort,$Action) {
 
-	$sort_bar=array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P", "Q","R","S","T","U","V","W","X","Y","Z");
-	for ($i=0; $i<26; $i++)
+	$sort_bar=array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P", "Q","R","S","T","U","V","W","X","Y","Z",t("ALL"));
+	for ($i=0; $i<27; $i++)
 	{
 		if ($i==0) $page .= '|';
 		if ($Sort==$sort_bar[$i]) { 

@@ -189,8 +189,14 @@ function addressbook_family_list() {
 	if ($Search!="") {
 		$parameter=$Search;
 	} else {
-	   $parameter=$Sort;
+		if ($Sort==t("ALL")) {
+			$parameter="";
+		} else {
+			$parameter=$Sort;
+		}
 	}
+	addressbook_debug_param("parameter", $parameter);
+
 	
 	$query  = '
 		SELECT 
@@ -349,6 +355,9 @@ function addressbook_family_view( $fid = -1)  {
 	
 	if ($fid==-1) {
 		$fid=$_POST["fid"];
+		if ($fid=="") {
+			$fid=$_SESSION["fid"];
+		}
 	}
 	addressbook_debug_param("fid", $fid);
 		
@@ -694,7 +703,7 @@ function addressbook_family_edit()  {
 		t("Telephone of family address."), 
 		$readonly );
 	
-	if (!addressbook_check_picture()) {
+	if (!addressbook_check_family_picture()) {
 		$page .= addressbook_form_item(
 			t("Image file"),
 			addressbook_input_picture("uploadedfile", $uploadedfile, $readonly),
@@ -705,7 +714,7 @@ function addressbook_family_edit()  {
 	// Menu bar
 	
 	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilySave',t('Save'));
-	if (addressbook_check_picture()) {
+	if (addressbook_check_family_picture()) {
 		$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'PictureDelete',t('Remove Picture'));
 	}
 	if ($fid!=0) {
@@ -741,6 +750,8 @@ function addressbook_family_remove() {
 	$node["child1"] = l(t('Family list'),URL_ADDRESSBOOK_FAMILY);
 	$node["child2"] = addressbook_hiddenlink('AddressbookForm', 'fid', $fid, 'FamilyEdit', t("Family view"));
 	addressbook_breadcrumb($node);
+	
+	drupal_set_title(t('Addressbook family delete'));
 	
 	$page .= '<fieldset>';
 		
