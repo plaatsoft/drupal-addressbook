@@ -1,0 +1,794 @@
+# $Id$
+#
+# Dutch translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  addressbook_csv_download.inc: n/a
+#  addressbook_csv_upload.inc: n/a
+#  addressbook_family.inc: n/a
+#  addressbook_map.inc: n/a
+#  addressbook_member.inc: n/a
+#  addressbook_utils.inc: n/a
+#  addressbook.module: n/a
+#  addressbook_mainmenu.inc: n/a
+#  addressbook.info,v 1.9 2009/10/27 19:01:51 wplaat
+#  addressbook_picture.inc: n/a
+#  addressbook.install,v 1.9 2009/10/27 19:01:51 wplaat
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-06-13 13:54+0200\n"
+"PO-Revision-Date: 2010-06-13 13:54+0200\n"
+"Last-Translator: wplaat <wplaat@plaatsoft.nl>\n"
+"Language-Team: Dutch <info@plaatsoft.nl>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: addressbook_csv_download.inc:38
+msgid "Addressbook csv download"
+msgstr "Adresboek csv download"
+
+#: addressbook_csv_upload.inc:44
+msgid "Addressbook csv upload"
+msgstr "Adresboek csv upload"
+
+#: addressbook_csv_upload.inc:47
+msgid "Addressbook upload"
+msgstr "Adresboek upload"
+
+#: addressbook_csv_upload.inc:55
+msgid "Addressbook file upload"
+msgstr "Adresboek bestand upload"
+
+#: addressbook_csv_upload.inc:57
+msgid "File"
+msgstr "Bestand"
+
+#: addressbook_csv_upload.inc:60
+msgid "Only CSV file format is supported and maximum file is "
+msgstr "Alleen CSV bestand formaat wordt ondersteund met een grootte van maximaal "
+
+#: addressbook_csv_upload.inc:65 addressbook_family.inc:338 addressbook_map.inc:135 addressbook_member.inc:564;566
+msgid "Back"
+msgstr "Terug"
+
+#: addressbook_csv_upload.inc:85
+msgid "Only CSV file format is supported."
+msgstr "Alleen CSV bestand formaat wordt ondersteund."
+
+#: addressbook_csv_upload.inc:162;168;174;180
+msgid "Line"
+msgstr "Regel"
+
+#: addressbook_csv_upload.inc:162
+msgid "First name empty"
+msgstr "Voornaam is verplicht"
+
+#: addressbook_csv_upload.inc:168
+msgid "Last name empty"
+msgstr "Achternaam is verplicht"
+
+#: addressbook_csv_upload.inc:174
+msgid "street empty"
+msgstr "Straat is verplicht"
+
+#: addressbook_csv_upload.inc:180
+msgid "zipcode empty"
+msgstr "Postcode is verplicht"
+
+#: addressbook_csv_upload.inc:266;294 addressbook_family.inc:908;939;986
+msgid "Family"
+msgstr "Familie"
+
+#: addressbook_csv_upload.inc:266;370 addressbook_family.inc:908
+msgid "created!"
+msgstr "Aangemaakt"
+
+#: addressbook_csv_upload.inc:294;398 addressbook_member.inc:858
+msgid "updated"
+msgstr "Aangepast"
+
+#: addressbook_csv_upload.inc:370;398 addressbook_member.inc:827;858;896
+msgid "Member"
+msgstr "Familie Lid"
+
+#: addressbook_family.inc:192 addressbook_member.inc:139 addressbook_utils.inc:108
+msgid "ALL"
+msgstr "Alles"
+
+#: addressbook_family.inc:222
+msgid "Addressbook family list"
+msgstr "Adresboek familie lijst"
+
+#: addressbook_family.inc:228;398;628;750 addressbook_map.inc:118 addressbook_member.inc:440
+msgid "Family list"
+msgstr "Familie lijst"
+
+#: addressbook_family.inc:232 addressbook_member.inc:184
+msgid "Filter"
+msgstr "Filter"
+
+#: addressbook_family.inc:235
+msgid "Last name"
+msgstr "Achternaam"
+
+#: addressbook_family.inc:237 addressbook_member.inc:189
+msgid "Search"
+msgstr "Zoeken"
+
+#: addressbook_family.inc:239
+msgid "Enter lastname and press enter to find a family."
+msgstr "Voer achternaam in en druk op enter"
+
+#: addressbook_family.inc:254 addressbook_member.inc:204
+msgid "Picture"
+msgstr "Foto"
+
+#: addressbook_family.inc:258;437 addressbook_member.inc:208
+msgid "Name"
+msgstr "Naam"
+
+#: addressbook_family.inc:262;677
+msgid "Street"
+msgstr "Straat"
+
+#: addressbook_family.inc:266;683
+msgid "Zipcode"
+msgstr "Postcode"
+
+#: addressbook_family.inc:270;689
+msgid "City"
+msgstr "Stad"
+
+#: addressbook_family.inc:330 addressbook_member.inc:269
+msgid "No records found"
+msgstr "Geen informatie gevonden"
+
+#: addressbook_family.inc:337
+msgid "New family"
+msgstr "Nieuwe familie aanmaken"
+
+#: addressbook_family.inc:392
+msgid "Addressbook family view"
+msgstr "Adresboek familie overzicht"
+
+#: addressbook_family.inc:399;629;751 addressbook_map.inc:119 addressbook_member.inc:441
+msgid "Family view"
+msgstr "Familie overzicht"
+
+#: addressbook_family.inc:436
+msgid "Phote"
+msgstr "Foto"
+
+#: addressbook_family.inc:438
+msgid "Birthday"
+msgstr "Geboren"
+
+#: addressbook_family.inc:439
+msgid "Mobile"
+msgstr "Mobiel"
+
+#: addressbook_family.inc:440 addressbook_member.inc:220
+msgid "Email"
+msgstr "Email"
+
+#: addressbook_family.inc:487
+msgid "Family Edit"
+msgstr "Familie aanpassen"
+
+#: addressbook_family.inc:488
+msgid "Member Add"
+msgstr "Familielid toevoegen"
+
+#: addressbook_family.inc:491
+msgid "Show Map"
+msgstr "Bekijk kaart"
+
+#: addressbook_family.inc:493;495
+msgid "Return"
+msgstr "Terug"
+
+#: addressbook_family.inc:625
+msgid "Addressbook family edit"
+msgstr "Adreboek familie aanpassen"
+
+#: addressbook_family.inc:636 addressbook_member.inc:464
+msgid "Extra"
+msgstr "Extra"
+
+#: addressbook_family.inc:639
+msgid "Last update"
+msgstr "Laatste aanpassing"
+
+#: addressbook_family.inc:641
+msgid "Last update date"
+msgstr "Laatste aanpassing datum"
+
+#: addressbook_family.inc:645
+msgid "Family Id:"
+msgstr "Familie id:"
+
+#: addressbook_family.inc:647
+msgid "Family id"
+msgstr "Familie id"
+
+#: addressbook_family.inc:651
+msgid "Owner"
+msgstr "Eigenaar"
+
+#: addressbook_family.inc:653
+msgid "Drupal owner (user) of address."
+msgstr "Drupal login account"
+
+#: addressbook_family.inc:660 addressbook_member.inc:495
+msgid "General"
+msgstr "Algemeen"
+
+#: addressbook_family.inc:665
+msgid "Middle Name"
+msgstr "Tussenvoegsel"
+
+#: addressbook_family.inc:667
+msgid "Middle name of the family name (for example: van, de, etc..)"
+msgstr "Tussenvoegels van familie naam (bijvoorbeeld 'van der', etc..)"
+
+#: addressbook_family.inc:671
+msgid "Last Name"
+msgstr "Achternaam"
+
+#: addressbook_family.inc:673;679
+msgid "Last name of the family name."
+msgstr "Achternaam van familie"
+
+#: addressbook_family.inc:685
+msgid "Zipcode of family address."
+msgstr "Postcode van familie adres"
+
+#: addressbook_family.inc:691
+msgid "City of family address."
+msgstr "Straatnaam van familie adres"
+
+#: addressbook_family.inc:695 addressbook.module:200
+msgid "Country"
+msgstr "Land"
+
+#: addressbook_family.inc:697
+msgid "Country of family address."
+msgstr "Land van familie adres"
+
+#: addressbook_family.inc:701 addressbook_member.inc:212
+msgid "Telephone"
+msgstr "Telefoon"
+
+#: addressbook_family.inc:703
+msgid "Telephone of family address."
+msgstr "Telefoonnummer van familie adres"
+
+#: addressbook_family.inc:708 addressbook_member.inc:547
+msgid "Image file"
+msgstr "Foto bestand"
+
+#: addressbook_family.inc:710 addressbook_member.inc:549
+msgid "Only jpg format is supported"
+msgstr "Alleen jpg foto formaat wordt ondersteund."
+
+#: addressbook_family.inc:716 addressbook_member.inc:569
+msgid "Save"
+msgstr "Opslaan"
+
+#: addressbook_family.inc:718
+msgid "Remove Picture"
+msgstr "Foto verwijderen"
+
+#: addressbook_family.inc:721
+msgid "Remove Family"
+msgstr "Familie verwijderen"
+
+#: addressbook_family.inc:723 addressbook_member.inc:575;577
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: addressbook_family.inc:754
+msgid "Addressbook family delete"
+msgstr "Adresboek familie verwijderen"
+
+#: addressbook_family.inc:759
+msgid "Delete selected family. Are you sure?"
+msgstr "Verwijder geselecteerd familie. Weet u het zeker?"
+
+#: addressbook_family.inc:764 addressbook_member.inc:625 addressbook.module:210;227;246
+msgid "Yes"
+msgstr "Ja"
+
+#: addressbook_family.inc:765 addressbook_member.inc:626 addressbook.module:210;227;246
+msgid "No"
+msgstr "Nee"
+
+#: addressbook_family.inc:827 addressbook_member.inc:730
+msgid "Last name is manitory"
+msgstr "Achternaam is verplicht"
+
+#: addressbook_family.inc:834
+msgid "Street is manitory"
+msgstr "Straatnaam is verplicht"
+
+#: addressbook_family.inc:841
+msgid "City is manitory"
+msgstr "Plaatsnaam is verplicht"
+
+#: addressbook_family.inc:848
+msgid "Country is manitory"
+msgstr "Land is verplicht"
+
+#: addressbook_family.inc:939
+msgid "updated!"
+msgstr "bijgewerkt!"
+
+#: addressbook_family.inc:986
+msgid "deleted!"
+msgstr "verwijderd!"
+
+#: addressbook_mainmenu.inc:47 addressbook_utils.inc:80 addressbook.module:143 addressbook.info:0
+msgid "Addressbook"
+msgstr "Adresboek"
+
+#: addressbook_mainmenu.inc:54
+msgid "Menu"
+msgstr "Menu"
+
+#: addressbook_mainmenu.inc:65
+msgid "View Family data"
+msgstr "Families bekijken"
+
+#: addressbook_mainmenu.inc:68
+msgid "View family data of addressbook"
+msgstr "Bekijk families die opgeslagen zijn in het adresboek"
+
+#: addressbook_mainmenu.inc:72
+msgid "View Member data"
+msgstr "Familieleden bekijken"
+
+#: addressbook_mainmenu.inc:75
+msgid "View member data of addressbook"
+msgstr "Bekijk familieleden die opgeslagen zijn in het adresboek"
+
+#: addressbook_mainmenu.inc:90
+msgid "Upload addressbook data."
+msgstr "Adresboek data uploaden."
+
+#: addressbook_mainmenu.inc:97
+msgid "Download addressbook data."
+msgstr "Adresboek data downloaden."
+
+#: addressbook_mainmenu.inc:106
+msgid "Note"
+msgstr "Opmerking"
+
+#: addressbook_mainmenu.inc:108
+msgid "Database information is last updated on"
+msgstr "Database informatie is laatst bijgewerkt op"
+
+#: addressbook_map.inc:115
+msgid "Addressbook map view"
+msgstr "Adresboek kaart"
+
+#: addressbook_map.inc:120
+msgid "Map view"
+msgstr "Kaart"
+
+#: addressbook_member.inc:174
+msgid "Addressbook member list"
+msgstr "Adresboek familieleden lijst"
+
+#: addressbook_member.inc:180;444;611
+msgid "Member list"
+msgstr "Familieleden lijst"
+
+#: addressbook_member.inc:187
+msgid "Last name:"
+msgstr "Achternaam:"
+
+#: addressbook_member.inc:190
+msgid "Enter lastname and press enter to find the member."
+msgstr "Voer achternaam van familielid in"
+
+#: addressbook_member.inc:216
+msgid "Mobile"
+msgstr "Mobiel"
+
+#: addressbook_member.inc:433
+msgid "Addressbook member view"
+msgstr "Adresboek familielid overzicht"
+
+#: addressbook_member.inc:442;445;612
+msgid "Member view"
+msgstr "Familielid overzicht"
+
+#: addressbook_member.inc:473
+msgid "Last updated:"
+msgstr "Laatst bijgewerkt:"
+
+#: addressbook_member.inc:480
+msgid "Member Id:"
+msgstr "Familielid id:"
+
+#: addressbook_member.inc:482
+msgid "Member id"
+msgstr "Familielid id"
+
+#: addressbook_member.inc:486
+msgid "Owner:"
+msgstr "Eigenaar:"
+
+#: addressbook_member.inc:488
+msgid "Drupal owner of this member"
+msgstr "Drupal eigenaar:"
+
+#: addressbook_member.inc:498
+msgid "First Name:"
+msgstr "Voornaam:"
+
+#: addressbook_member.inc:500
+msgid "First Name of member"
+msgstr "Voornaam van familielid."
+
+#: addressbook_member.inc:504
+msgid "Middle Name:"
+msgstr "Tussenvoegsel:"
+
+#: addressbook_member.inc:506
+msgid "Middle Name of member"
+msgstr "Tussenvoegsel van familielid."
+
+#: addressbook_member.inc:510
+msgid "Last Name:"
+msgstr "Achternaam:"
+
+#: addressbook_member.inc:512
+msgid "Last Name of member"
+msgstr "Achternaam van familielid."
+
+#: addressbook_member.inc:516
+msgid "Mobile:"
+msgstr "Mobiel:"
+
+#: addressbook_member.inc:518;524
+msgid "Mobile number of member"
+msgstr "Mobiele nummer van familielid."
+
+#: addressbook_member.inc:522
+msgid "Email:"
+msgstr "Email:"
+
+#: addressbook_member.inc:528
+msgid "Birthday:"
+msgstr "Geboren:"
+
+#: addressbook_member.inc:530
+msgid "Birtday of member"
+msgstr "Geboorte dag van familielid."
+
+#: addressbook_member.inc:534
+msgid "Work:"
+msgstr "Werk:"
+
+#: addressbook_member.inc:536
+msgid "Work notes"
+msgstr "Werk notitie."
+
+#: addressbook_member.inc:540
+msgid "Notes:"
+msgstr "Opmerking:"
+
+#: addressbook_member.inc:542
+msgid "General notes"
+msgstr "Algemene opmerkingen"
+
+#: addressbook_member.inc:563
+msgid "Edit"
+msgstr "Wijzig"
+
+#: addressbook_member.inc:572
+msgid "Delete Picture"
+msgstr "Verwijder foto"
+
+#: addressbook_member.inc:574
+msgid "Delete Member"
+msgstr "Verwijder familielid"
+
+#: addressbook_member.inc:615
+msgid "Addressbook member delete"
+msgstr "Adresboek familielid verwijderen"
+
+#: addressbook_member.inc:620
+msgid "Delete selected member. Are you sure?"
+msgstr "Verwijder geselecteerd familielid. Weet U het zeker?"
+
+#: addressbook_member.inc:723
+msgid "First name is manitory"
+msgstr "Voornaam is verplicht"
+
+#: addressbook_member.inc:736
+msgid "Family id is null"
+msgstr "Familielid ID is nul"
+
+#: addressbook_member.inc:827
+msgid "created"
+msgstr "is aangemaakt"
+
+#: addressbook_member.inc:896
+msgid "is deleted."
+msgstr "is verwijderd"
+
+#: addressbook_picture.inc:191;248
+msgid "Creating image directory failed!"
+msgstr "Foto directory aanmaken is mislukt"
+
+#: addressbook_picture.inc:231
+msgid "Image file size to big!"
+msgstr "Foto is te groot."
+
+#: addressbook_picture.inc:280
+msgid "Image file size to big"
+msgstr "Foto is te groot."
+
+#: addressbook_picture.inc:297
+msgid "Image is saved"
+msgstr "Foto opgeslagen"
+
+#: addressbook_picture.inc:305
+msgid "Only jpg format is supported."
+msgstr "Alleen jpg foto formaat wordt ondersteund."
+
+#: addressbook_picture.inc:366
+msgid "Picture is deleted!"
+msgstr "Foto is verwijderd"
+
+#: addressbook_utils.inc:72
+msgid "This is a manitory field"
+msgstr "Dit is een verplicht veld."
+
+#: addressbook_utils.inc:79
+msgid "Start"
+msgstr "Start"
+
+#: addressbook_utils.inc:231
+msgid "January"
+msgstr "Januari"
+
+#: addressbook_utils.inc:231
+msgid "February"
+msgstr "Februari"
+
+#: addressbook_utils.inc:231
+msgid "March"
+msgstr "Maart"
+
+#: addressbook_utils.inc:231
+msgid "April"
+msgstr "April"
+
+#: addressbook_utils.inc:231
+msgid "May"
+msgstr "Mei"
+
+#: addressbook_utils.inc:232
+msgid "June"
+msgstr "Juni"
+
+#: addressbook_utils.inc:232
+msgid "July"
+msgstr "Juli"
+
+#: addressbook_utils.inc:232
+msgid "August"
+msgstr "Augustus"
+
+#: addressbook_utils.inc:232
+msgid "September"
+msgstr "September"
+
+#: addressbook_utils.inc:232
+msgid "October"
+msgstr "Oktober"
+
+#: addressbook_utils.inc:233
+msgid "November"
+msgstr "November"
+
+#: addressbook_utils.inc:233
+msgid "December"
+msgstr "December"
+
+#: addressbook_utils.inc:286;293
+msgid "No owner"
+msgstr "Geen eigenaar"
+
+#: addressbook_utils.inc:352
+msgid "Please enter the roles you currently fulfilling and please enter the roles you are interesed in now or in the near future!"
+msgstr "Selecteer rollen die U op dit moment uitvoert."
+
+#: addressbook_utils.inc:359
+msgid "Active Roles"
+msgstr "Actieve rollen"
+
+#: addressbook_utils.inc:389
+msgid "Interesing Roles"
+msgstr "Geinterreseerd rollen"
+
+#: addressbook.module:36
+msgid "v4.1"
+msgstr "v4.1"
+
+#: addressbook.module:81
+msgid "Addressbook module"
+msgstr "Adresboek module"
+
+#: addressbook.module:182
+msgid "General settings"
+msgstr "Algemeen instellingen"
+
+#: addressbook.module:186
+msgid "Name format "
+msgstr "Naam formaat "
+
+#: addressbook.module:188
+msgid "middle last, first"
+msgstr "Tussenvoegsel Achternaam, Voornaam"
+
+#: addressbook.module:188
+msgid "first middle last"
+msgstr "Voornaam Tussenvoegsel Achternaam"
+
+#: addressbook.module:189
+msgid "Set the name format which will be used in the general addressbook list page."
+msgstr "Selecteer het gewenst naam formaat"
+
+#: addressbook.module:193
+msgid "Roles"
+msgstr "Rollen"
+
+#: addressbook.module:196
+msgid "Enter the roles which a person can have (Seperate items with commas (,). No spaces allowed)."
+msgstr "Voer hier alle gewenste rollen in (Rollen scheiden met komma's en geen spatie gebruiken)"
+
+#: addressbook.module:201
+msgid "Nederland"
+msgstr "Nederland"
+
+#: addressbook.module:202
+msgid "Specify default country for new address items."
+msgstr "Selecteer standaard land"
+
+#: addressbook.module:208
+msgid "Show thumbnails pictures in list views"
+msgstr "Laat thumbnails foto's zien."
+
+#: addressbook.module:211
+msgid "Enable / disable thumbnail pictures in family list and family member list."
+msgstr "Activeer / Deactiveer thumbnails foto's"
+
+#: addressbook.module:215
+msgid "Date"
+msgstr "Datum"
+
+#: addressbook.module:217
+msgid "The last edit date (dd-mm-yyyy) of the addressbook data."
+msgstr "Laatste datum dat er iets veranderd is in het adresboek"
+
+#: addressbook.module:221
+msgid "Map settings"
+msgstr "Kaart instellingen"
+
+#: addressbook.module:225
+msgid "Activate map link"
+msgstr ""
+
+#: addressbook.module:228
+msgid "Enable / Disable Activate www.map24.com fast link."
+msgstr ""
+
+#: addressbook.module:232
+msgid "Free www.map24.com access key"
+msgstr ""
+
+#: addressbook.module:234
+msgid "Enter access key (Visit http://www.map24.com to obtain a free key)"
+msgstr ""
+
+#: addressbook.module:240
+msgid "Birthday notification settings"
+msgstr "Verjaardsag notificatie instellingen"
+
+#: addressbook.module:244
+msgid "Birthday email notification"
+msgstr "Verjaardag email notificatie"
+
+#: addressbook.module:247
+msgid "Enable / disable email birthday notification."
+msgstr "Activeer / Deactiveer verjaardag notificatie"
+
+#: addressbook.module:251
+msgid "Subject of birtday e-mail"
+msgstr "Onderwerp van email"
+
+#: addressbook.module:254
+msgid "Customize the subject of your birthday e-mail, which is sent to members upon their birthday."
+msgstr ""
+
+#: addressbook.module:254;261
+msgid "Available variables are:"
+msgstr ""
+
+#: addressbook.module:258
+msgid "Body of birthday e-mail"
+msgstr ""
+
+#: addressbook.module:261
+msgid "Customize the body of the birthday e-mail, which is sent to members upon their birthday."
+msgstr ""
+
+#: addressbook.module:349
+msgid "Birthday today"
+msgstr "Verjaardagen"
+
+#: addressbook.module:393
+msgid "Birthdays today"
+msgstr "Verjaardagen"
+
+#: addressbook.module:284
+msgid "cron"
+msgstr "cron"
+
+#: addressbook.module:284
+msgid "Addressbook birthday cron"
+msgstr "Adresboek verjaardag cron"
+
+#: addressbook.module:164
+msgid "view addressbook"
+msgstr "Adresboek bekijken"
+
+#: addressbook.module:164
+msgid "edit addressbook"
+msgstr "Adresboek aanpassen"
+
+#: addressbook.module:164
+msgid "administer addressbook"
+msgstr "Adresboek administreren"
+
+#: addressbook.module:108
+msgid "Addressbook main menu"
+msgstr "Adresboek hoofdmenu"
+
+#: addressbook.module:115;122
+msgid "Addressbook data"
+msgstr "Adresboek data"
+
+#: addressbook.module:129
+msgid "Addressbook CSV upload"
+msgstr "Adresboek CSV upload"
+
+#: addressbook.module:136
+msgid "Addressbook CSV download"
+msgstr "Adresboek CSV download"
+
+#: addressbook.module:144
+msgid "Settings of addressbook."
+msgstr "Instellingen van adresboek"
+
+#: addressbook.install:61
+msgid "addressbook database tables created."
+msgstr "Adresboek database tabellen zijn aangemaakt"
+
+#: addressbook.info:0
+msgid "Global Addressbook with some nice features"
+msgstr "Adresboek met vele interresant opties"
+
+#: addressbook.info:0
+msgid "Other"
+msgstr "Overige"
+
