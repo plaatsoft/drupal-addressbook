@@ -33,7 +33,7 @@
 // ##################################################################################
 
 // Module version
-define('ADDRESSBOOK_VERSION' ,t('v4.1'));
+define('ADDRESSBOOK_VERSION' ,'v4.2'));
 
 // Addressbook module URLs.
 define('URL_ADDRESSBOOK',           'addressbook');

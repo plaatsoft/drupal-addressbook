@@ -2,7 +2,7 @@
 name = Addressbook
 description = Global Addressbook with some nice features
 package = Other
-version = "6.x-4.1"
+version = "6.x-4.2"
 project = "addressbook"
 core = "6.x"
 

@@ -624,10 +624,6 @@ msgstr ""
 msgid "Interesing Roles"
 msgstr ""
 
-#: addressbook.module:36
-msgid "v4.1"
-msgstr ""
-
 #: addressbook.module:81
 msgid "Addressbook module"
 msgstr ""
