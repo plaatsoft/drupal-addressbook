@@ -1,0 +1,9 @@
+; $Id: addressbook.info,v 1.9 2009/10/27 19:01:51 wplaat Exp $
+name = Addressbook
+description = Global Addressbook with some nice features
+package = Other
+version = "6.x-4.2"
+project = "addressbook"
+core = "6.x"
+
+

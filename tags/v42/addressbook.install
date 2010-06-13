@@ -1,0 +1,84 @@
+<?php
+// $Id: addressbook.install,v 1.9 2009/10/27 19:01:51 wplaat Exp $
+
+/**
+ * Install the initial schema.
+ */
+function addressbook_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+
+      db_query("
+CREATE TABLE `addressbook_family` (
+  `FID` int(11) NOT NULL auto_increment COMMENT 'Family ID',
+  `LAST_NAME` varchar(50) default NULL,
+  `MIDDLE_NAME` varchar(20) default NULL,
+  `STREET` varchar(50) default NULL,
+  `ZIPCODE` varchar(8) default NULL,
+  `CITY` varchar(50) default NULL,
+  `COUNTRY` varchar(50) default NULL,
+  `TELEPHONE` varchar(20) default NULL,
+  `LAST_UPDATED` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `UID` int(11) default NULL COMMENT 'User ID',
+  PRIMARY KEY  (`FID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+      ");
+
+
+db_query("
+CREATE TABLE `addressbook_member` (
+  `MID` int(11) NOT NULL auto_increment COMMENT 'Member ID',
+  `FIRST_NAME` varchar(50) default NULL,
+  `BIRTH_DAY` date default NULL,
+  `MOBILE` varchar(20) default NULL,
+  `EMAIL` varchar(50) default NULL,
+  `NOTES` varchar(1000) default NULL,
+  `WORK` varchar(1000) default NULL,
+  `ACTIVE_ROLES` varchar(200) default NULL,
+  `WANTED_ROLES` varchar(200) default NULL,
+  `UID` int(11) default NULL COMMENT 'User ID',
+  `FID` int(11) default NULL COMMENT 'Family ID',
+  `LAST_UPDATED` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `MIDDLE_NAME` varchar(10) default NULL,
+  `LAST_NAME` varchar(50) default NULL,
+  PRIMARY KEY  (`MID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+    ");
+
+db_query("
+CREATE TABLE `addressbook_picture` (
+  `PID` int(11) NOT NULL auto_increment COMMENT 'Picture ID',
+  `FID` int(11) NOT NULL COMMENT 'Family ID',
+  `MID` int(11) NOT NULL COMMENT 'Member ID',
+  `PICTURE` varchar(50) NOT NULL COMMENT 'Image filename',
+  `UID` int(11) NOT NULL COMMENT 'User ID',
+  `LAST_UPDATED` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`PID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+        "); 
+
+	drupal_set_message(t("addressbook database tables created."));
+      break;
+  }
+}
+
+function addressbook_update_6041() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+	db_query("update `addressbook_picture` set fid=0 where mid!=0");
+      break;
+  }
+}
+
+
+/**
+* Implementation of hook_uninstall().
+*/
+
+function addressbook_uninstall() {
+db_query('DROP TABLE {addressbook_family}');
+db_query('DROP TABLE {addressbook_member}');
+db_query('DROP TABLE {addressbook_picture}');
+}

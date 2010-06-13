@@ -1,0 +1,794 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright 2010 PlaatSoft <info@plaatsoft.nl>
+# Generated from files:
+#  addressbook_csv_download.inc: n/a
+#  addressbook_csv_upload.inc: n/a
+#  addressbook_family.inc: n/a
+#  addressbook_map.inc: n/a
+#  addressbook_member.inc: n/a
+#  addressbook_utils.inc: n/a
+#  addressbook.module: n/a
+#  addressbook_mainmenu.inc: n/a
+#  addressbook.info,v 1.9 2009/10/27 19:01:51 wplaat
+#  addressbook_picture.inc: n/a
+#  addressbook.install,v 1.9 2009/10/27 19:01:51 wplaat
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-06-13 13:54+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: wplaat <wplaat@plaatsoft.nl>\n"
+"Language-Team: LANGUAGE <info@plaatsoft.nl>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: addressbook_csv_download.inc:38
+msgid "Addressbook csv download"
+msgstr ""
+
+#: addressbook_csv_upload.inc:44
+msgid "Addressbook csv upload"
+msgstr ""
+
+#: addressbook_csv_upload.inc:47
+msgid "Addressbook upload"
+msgstr ""
+
+#: addressbook_csv_upload.inc:55
+msgid "Addressbook file upload"
+msgstr ""
+
+#: addressbook_csv_upload.inc:57
+msgid "File"
+msgstr ""
+
+#: addressbook_csv_upload.inc:60
+msgid "Only CSV file format is supported and maximum file is "
+msgstr ""
+
+#: addressbook_csv_upload.inc:65 addressbook_family.inc:338 addressbook_map.inc:135 addressbook_member.inc:564;566
+msgid "Back"
+msgstr ""
+
+#: addressbook_csv_upload.inc:85
+msgid "Only CSV file format is supported."
+msgstr ""
+
+#: addressbook_csv_upload.inc:162;168;174;180
+msgid "Line"
+msgstr ""
+
+#: addressbook_csv_upload.inc:162
+msgid "First name empty"
+msgstr ""
+
+#: addressbook_csv_upload.inc:168
+msgid "Last name empty"
+msgstr ""
+
+#: addressbook_csv_upload.inc:174
+msgid "street empty"
+msgstr ""
+
+#: addressbook_csv_upload.inc:180
+msgid "zipcode empty"
+msgstr ""
+
+#: addressbook_csv_upload.inc:266;294 addressbook_family.inc:908;939;986
+msgid "Family"
+msgstr ""
+
+#: addressbook_csv_upload.inc:266;370 addressbook_family.inc:908
+msgid "created!"
+msgstr ""
+
+#: addressbook_csv_upload.inc:294;398 addressbook_member.inc:858
+msgid "updated"
+msgstr ""
+
+#: addressbook_csv_upload.inc:370;398 addressbook_member.inc:827;858;896
+msgid "Member"
+msgstr ""
+
+#: addressbook_family.inc:192 addressbook_member.inc:139 addressbook_utils.inc:108
+msgid "ALL"
+msgstr ""
+
+#: addressbook_family.inc:222
+msgid "Addressbook family list"
+msgstr ""
+
+#: addressbook_family.inc:228;398;628;750 addressbook_map.inc:118 addressbook_member.inc:440
+msgid "Family list"
+msgstr ""
+
+#: addressbook_family.inc:232 addressbook_member.inc:184
+msgid "Filter"
+msgstr ""
+
+#: addressbook_family.inc:235
+msgid "Achternaam"
+msgstr ""
+
+#: addressbook_family.inc:237 addressbook_member.inc:189
+msgid "Search"
+msgstr ""
+
+#: addressbook_family.inc:239
+msgid "Enter lastname and press enter to find a family."
+msgstr ""
+
+#: addressbook_family.inc:254 addressbook_member.inc:204
+msgid "Picture"
+msgstr ""
+
+#: addressbook_family.inc:258;437 addressbook_member.inc:208
+msgid "Name"
+msgstr ""
+
+#: addressbook_family.inc:262;677
+msgid "Street"
+msgstr ""
+
+#: addressbook_family.inc:266;683
+msgid "Zipcode"
+msgstr ""
+
+#: addressbook_family.inc:270;689
+msgid "City"
+msgstr ""
+
+#: addressbook_family.inc:330 addressbook_member.inc:269
+msgid "No records found"
+msgstr ""
+
+#: addressbook_family.inc:337
+msgid "New family"
+msgstr ""
+
+#: addressbook_family.inc:392
+msgid "Addressbook family view"
+msgstr ""
+
+#: addressbook_family.inc:399;629;751 addressbook_map.inc:119 addressbook_member.inc:441
+msgid "Family view"
+msgstr ""
+
+#: addressbook_family.inc:436
+msgid "Phote"
+msgstr ""
+
+#: addressbook_family.inc:438
+msgid "Birthday"
+msgstr ""
+
+#: addressbook_family.inc:439
+msgid "Mobiel"
+msgstr ""
+
+#: addressbook_family.inc:440 addressbook_member.inc:220
+msgid "Email"
+msgstr ""
+
+#: addressbook_family.inc:487
+msgid "Family Edit"
+msgstr ""
+
+#: addressbook_family.inc:488
+msgid "Member Add"
+msgstr ""
+
+#: addressbook_family.inc:491
+msgid "Show Map"
+msgstr ""
+
+#: addressbook_family.inc:493;495
+msgid "Return"
+msgstr ""
+
+#: addressbook_family.inc:625
+msgid "Addressbook family edit"
+msgstr ""
+
+#: addressbook_family.inc:636 addressbook_member.inc:464
+msgid "Extra"
+msgstr ""
+
+#: addressbook_family.inc:639
+msgid "Last Access"
+msgstr ""
+
+#: addressbook_family.inc:641
+msgid "Last access date"
+msgstr ""
+
+#: addressbook_family.inc:645
+msgid "Family Id:"
+msgstr ""
+
+#: addressbook_family.inc:647
+msgid "Family id"
+msgstr ""
+
+#: addressbook_family.inc:651
+msgid "Owner"
+msgstr ""
+
+#: addressbook_family.inc:653
+msgid "Drupal owner (user) of address."
+msgstr ""
+
+#: addressbook_family.inc:660 addressbook_member.inc:495
+msgid "General"
+msgstr ""
+
+#: addressbook_family.inc:665
+msgid "Middle Name"
+msgstr ""
+
+#: addressbook_family.inc:667
+msgid "Middle name of the family name (for example: van, de, etc..)"
+msgstr ""
+
+#: addressbook_family.inc:671
+msgid "Last Name"
+msgstr ""
+
+#: addressbook_family.inc:673;679
+msgid "Last name of the family name."
+msgstr ""
+
+#: addressbook_family.inc:685
+msgid "Zipcode of family address."
+msgstr ""
+
+#: addressbook_family.inc:691
+msgid "City of family address."
+msgstr ""
+
+#: addressbook_family.inc:695 addressbook.module:200
+msgid "Country"
+msgstr ""
+
+#: addressbook_family.inc:697
+msgid "Country of family address."
+msgstr ""
+
+#: addressbook_family.inc:701 addressbook_member.inc:212
+msgid "Telephone"
+msgstr ""
+
+#: addressbook_family.inc:703
+msgid "Telephone of family address."
+msgstr ""
+
+#: addressbook_family.inc:708 addressbook_member.inc:547
+msgid "Image file"
+msgstr ""
+
+#: addressbook_family.inc:710 addressbook_member.inc:549
+msgid "Only jpg format is supported"
+msgstr ""
+
+#: addressbook_family.inc:716 addressbook_member.inc:569
+msgid "Save"
+msgstr ""
+
+#: addressbook_family.inc:718
+msgid "Remove Picture"
+msgstr ""
+
+#: addressbook_family.inc:721
+msgid "Remove Family"
+msgstr ""
+
+#: addressbook_family.inc:723 addressbook_member.inc:575;577
+msgid "Cancel"
+msgstr ""
+
+#: addressbook_family.inc:754
+msgid "Addressbook family delete"
+msgstr ""
+
+#: addressbook_family.inc:759
+msgid "Delete selected family. Are you sure?"
+msgstr ""
+
+#: addressbook_family.inc:762 addressbook_member.inc:623
+msgid "<br/>"
+msgstr ""
+
+#: addressbook_family.inc:764 addressbook_member.inc:625 addressbook.module:210;227;246
+msgid "Yes"
+msgstr ""
+
+#: addressbook_family.inc:765 addressbook_member.inc:626 addressbook.module:210;227;246
+msgid "No"
+msgstr ""
+
+#: addressbook_family.inc:827 addressbook_member.inc:730
+msgid "Last name is manitory"
+msgstr ""
+
+#: addressbook_family.inc:834
+msgid "Street is manitory"
+msgstr ""
+
+#: addressbook_family.inc:841
+msgid "City is manitory"
+msgstr ""
+
+#: addressbook_family.inc:848
+msgid "Country is manitory"
+msgstr ""
+
+#: addressbook_family.inc:939
+msgid "updated!"
+msgstr ""
+
+#: addressbook_family.inc:986
+msgid "deleted!"
+msgstr ""
+
+#: addressbook_mainmenu.inc:47 addressbook_utils.inc:80 addressbook.module:143 addressbook.info:0
+msgid "Addressbook"
+msgstr ""
+
+#: addressbook_mainmenu.inc:54
+msgid "Menu"
+msgstr ""
+
+#: addressbook_mainmenu.inc:65
+msgid "View Family data"
+msgstr ""
+
+#: addressbook_mainmenu.inc:68
+msgid "View family data of addressbook"
+msgstr ""
+
+#: addressbook_mainmenu.inc:72
+msgid "View Member data"
+msgstr ""
+
+#: addressbook_mainmenu.inc:75
+msgid "View member data of addressbook"
+msgstr ""
+
+#: addressbook_mainmenu.inc:90
+msgid "Upload addressbook data."
+msgstr ""
+
+#: addressbook_mainmenu.inc:97
+msgid "Download addressbook data."
+msgstr ""
+
+#: addressbook_mainmenu.inc:106
+msgid "Note"
+msgstr ""
+
+#: addressbook_mainmenu.inc:108
+msgid "Database information is last updated on"
+msgstr ""
+
+#: addressbook_map.inc:115
+msgid "Addressbook map view"
+msgstr ""
+
+#: addressbook_map.inc:120
+msgid "Map view"
+msgstr ""
+
+#: addressbook_member.inc:174
+msgid "Addressbook member list"
+msgstr ""
+
+#: addressbook_member.inc:180;444;611
+msgid "Member list"
+msgstr ""
+
+#: addressbook_member.inc:187
+msgid "Last name:"
+msgstr ""
+
+#: addressbook_member.inc:190
+msgid "Enter lastname and press enter to find the member."
+msgstr ""
+
+#: addressbook_member.inc:216
+msgid "Mobile"
+msgstr ""
+
+#: addressbook_member.inc:433
+msgid "Addressbook member view"
+msgstr ""
+
+#: addressbook_member.inc:442;445;612
+msgid "Member view"
+msgstr ""
+
+#: addressbook_member.inc:473
+msgid "Last updated:"
+msgstr ""
+
+#: addressbook_member.inc:480
+msgid "Member Id:"
+msgstr ""
+
+#: addressbook_member.inc:482
+msgid "Member id"
+msgstr ""
+
+#: addressbook_member.inc:486
+msgid "Owner:"
+msgstr ""
+
+#: addressbook_member.inc:488
+msgid "Drupal owner of this member"
+msgstr ""
+
+#: addressbook_member.inc:498
+msgid "First Name:"
+msgstr ""
+
+#: addressbook_member.inc:500
+msgid "First Name of member"
+msgstr ""
+
+#: addressbook_member.inc:504
+msgid "Middle Name:"
+msgstr ""
+
+#: addressbook_member.inc:506
+msgid "Middle Name of member"
+msgstr ""
+
+#: addressbook_member.inc:510
+msgid "Last Name:"
+msgstr ""
+
+#: addressbook_member.inc:512
+msgid "Last Name of member"
+msgstr ""
+
+#: addressbook_member.inc:516
+msgid "Mobile:"
+msgstr ""
+
+#: addressbook_member.inc:518;524
+msgid "Mobile number of member"
+msgstr ""
+
+#: addressbook_member.inc:522
+msgid "Email:"
+msgstr ""
+
+#: addressbook_member.inc:528
+msgid "Birthday:"
+msgstr ""
+
+#: addressbook_member.inc:530
+msgid "Birtday of member"
+msgstr ""
+
+#: addressbook_member.inc:534
+msgid "Work:"
+msgstr ""
+
+#: addressbook_member.inc:536
+msgid "Work notes"
+msgstr ""
+
+#: addressbook_member.inc:540
+msgid "Notes:"
+msgstr ""
+
+#: addressbook_member.inc:542
+msgid "General notes"
+msgstr ""
+
+#: addressbook_member.inc:563
+msgid "Edit"
+msgstr ""
+
+#: addressbook_member.inc:572
+msgid "Delete Picture"
+msgstr ""
+
+#: addressbook_member.inc:574
+msgid "Delete Member"
+msgstr ""
+
+#: addressbook_member.inc:615
+msgid "Addressbook member delete"
+msgstr ""
+
+#: addressbook_member.inc:620
+msgid "Delete selected member. Are you sure?"
+msgstr ""
+
+#: addressbook_member.inc:723
+msgid "First name is manitory"
+msgstr ""
+
+#: addressbook_member.inc:736
+msgid "Family id is null"
+msgstr ""
+
+#: addressbook_member.inc:827
+msgid "created"
+msgstr ""
+
+#: addressbook_member.inc:896
+msgid "is deleted."
+msgstr ""
+
+#: addressbook_picture.inc:191;248
+msgid "Creating image directory failed!"
+msgstr ""
+
+#: addressbook_picture.inc:231
+msgid "Image file size to big!"
+msgstr ""
+
+#: addressbook_picture.inc:280
+msgid "Image file size to big"
+msgstr ""
+
+#: addressbook_picture.inc:297
+msgid "Image is saved"
+msgstr ""
+
+#: addressbook_picture.inc:305
+msgid "Only jpg format is supported."
+msgstr ""
+
+#: addressbook_picture.inc:366
+msgid "Picture is deleted!"
+msgstr ""
+
+#: addressbook_utils.inc:72
+msgid "This is a manitory field"
+msgstr ""
+
+#: addressbook_utils.inc:79
+msgid "Start"
+msgstr ""
+
+#: addressbook_utils.inc:231
+msgid "January"
+msgstr ""
+
+#: addressbook_utils.inc:231
+msgid "February"
+msgstr ""
+
+#: addressbook_utils.inc:231
+msgid "March"
+msgstr ""
+
+#: addressbook_utils.inc:231
+msgid "April"
+msgstr ""
+
+#: addressbook_utils.inc:231
+msgid "May"
+msgstr ""
+
+#: addressbook_utils.inc:232
+msgid "June"
+msgstr ""
+
+#: addressbook_utils.inc:232
+msgid "July"
+msgstr ""
+
+#: addressbook_utils.inc:232
+msgid "August"
+msgstr ""
+
+#: addressbook_utils.inc:232
+msgid "September"
+msgstr ""
+
+#: addressbook_utils.inc:232
+msgid "October"
+msgstr ""
+
+#: addressbook_utils.inc:233
+msgid "November"
+msgstr ""
+
+#: addressbook_utils.inc:233
+msgid "December"
+msgstr ""
+
+#: addressbook_utils.inc:286;293
+msgid "No owner"
+msgstr ""
+
+#: addressbook_utils.inc:352
+msgid "Please enter the roles you currently fulfilling and please enter the roles you are interesed in now or in the near future!"
+msgstr ""
+
+#: addressbook_utils.inc:359
+msgid "Active Roles"
+msgstr ""
+
+#: addressbook_utils.inc:389
+msgid "Interesing Roles"
+msgstr ""
+
+#: addressbook.module:81
+msgid "Addressbook module"
+msgstr ""
+
+#: addressbook.module:182
+msgid "General settings"
+msgstr ""
+
+#: addressbook.module:186
+msgid "Name format "
+msgstr ""
+
+#: addressbook.module:188
+msgid "middle last, first"
+msgstr ""
+
+#: addressbook.module:188
+msgid "first middle last"
+msgstr ""
+
+#: addressbook.module:189
+msgid "Set the name format which will be used in the general addressbook list page."
+msgstr ""
+
+#: addressbook.module:193
+msgid "Roles"
+msgstr ""
+
+#: addressbook.module:196
+msgid "Enter the roles which a person can have (Seperate items with commas (,). No spaces allowed)."
+msgstr ""
+
+#: addressbook.module:201
+msgid "Nederland"
+msgstr ""
+
+#: addressbook.module:202
+msgid "Specify default country for new address items."
+msgstr ""
+
+#: addressbook.module:208
+msgid "Show thumbnails pictures in list views"
+msgstr ""
+
+#: addressbook.module:211
+msgid "Enable / disable thumbnail pictures in family list and family member list."
+msgstr ""
+
+#: addressbook.module:215
+msgid "Date"
+msgstr ""
+
+#: addressbook.module:217
+msgid "The last edit date (dd-mm-yyyy) of the addressbook data."
+msgstr ""
+
+#: addressbook.module:221
+msgid "Map settings"
+msgstr ""
+
+#: addressbook.module:225
+msgid "Activate map link"
+msgstr ""
+
+#: addressbook.module:228
+msgid "Enable / Disable Activate www.map24.com fast link."
+msgstr ""
+
+#: addressbook.module:232
+msgid "Free www.map24.com access key"
+msgstr ""
+
+#: addressbook.module:234
+msgid "Enter access key (Visit http://www.map24.com to obtain a free key)"
+msgstr ""
+
+#: addressbook.module:240
+msgid "Birthday notification settings"
+msgstr ""
+
+#: addressbook.module:244
+msgid "Birthday email notification"
+msgstr ""
+
+#: addressbook.module:247
+msgid "Enable / disable email birthday notification."
+msgstr ""
+
+#: addressbook.module:251
+msgid "Subject of birtday e-mail"
+msgstr ""
+
+#: addressbook.module:254
+msgid "Customize the subject of your birthday e-mail, which is sent to members upon their birthday."
+msgstr ""
+
+#: addressbook.module:254;261
+msgid "Available variables are:"
+msgstr ""
+
+#: addressbook.module:258
+msgid "Body of birthday e-mail"
+msgstr ""
+
+#: addressbook.module:261
+msgid "Customize the body of the birthday e-mail, which is sent to members upon their birthday."
+msgstr ""
+
+#: addressbook.module:349
+msgid "Birthday today"
+msgstr ""
+
+#: addressbook.module:393
+msgid "Birthdays today"
+msgstr ""
+
+#: addressbook.module:284
+msgid "cron"
+msgstr ""
+
+#: addressbook.module:284
+msgid "Addressbook birthday cron"
+msgstr ""
+
+#: addressbook.module:164
+msgid "view addressbook"
+msgstr ""
+
+#: addressbook.module:164
+msgid "edit addressbook"
+msgstr ""
+
+#: addressbook.module:164
+msgid "administer addressbook"
+msgstr ""
+
+#: addressbook.module:108
+msgid "Addressbook main menu"
+msgstr ""
+
+#: addressbook.module:115;122
+msgid "Addressbook data"
+msgstr ""
+
+#: addressbook.module:129
+msgid "Addressbook CSV upload"
+msgstr ""
+
+#: addressbook.module:136
+msgid "Addressbook CSV download"
+msgstr ""
+
+#: addressbook.module:144
+msgid "Settings of addressbook."
+msgstr ""
+
+#: addressbook.install:61
+msgid "addressbook database tables created."
+msgstr ""
+
+#: addressbook.info:0
+msgid "Global Addressbook with some nice features"
+msgstr ""
+
+#: addressbook.info:0
+msgid "Other"
+msgstr ""
+
