@@ -57,12 +57,12 @@
 	$page .= '  <label>'.t('File').':</label>';
 	$page .= '  <input name="uploadedfile" type="file" size="100" onChange="submit();" />';
 	$page .= '  <div class="description">';
-	$page .= t('Alleen csv formaat wordt ondersteund en het bestand mag niet groter zijn dan ').ini_get('upload_max_filesize').'B';
+	$page .= t('Only CSV file format is supported and maximum file is ').ini_get('upload_max_filesize').'B';
 	$page .= '  </div>';
 	$page .= '</div>';
 	$page .= '</fieldset>' ;  
 	
-	$page .= '<a href="'.url(URL_ADDRESSBOOK).'">'.t('Terug').'</a>';
+	$page .= '<a href="'.url(URL_ADDRESSBOOK).'">'.t('Back').'</a>';
 	
 	$page .= '</div>';
 	$page .= '</form>';  

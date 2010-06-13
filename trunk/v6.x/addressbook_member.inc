@@ -507,7 +507,7 @@ function addressbook_member_view( $readonly=true )  {
 					$readonly );
 				
 	$page .= addressbook_form_item(
-					t("Last Name:".addressbook_view_manitory()),
+					t("Last Name:").addressbook_view_manitory(),
 					addressbook_view_text("last_name", 50, 50, $last_name, $readonly),
 					t("Last Name of member"), 
 					$readonly );
@@ -620,7 +620,7 @@ function addressbook_member_remove() {
 	$page .= t("Delete selected member. Are you sure?");
 	$page .= '</h4>';
 	
-	$page .= t("<br/>");
+	$page .= "<br/>";
 	
 	$page .= addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberDelete',t('Yes'));
 	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','mid',$mid,'MemberEdit',t('No'));

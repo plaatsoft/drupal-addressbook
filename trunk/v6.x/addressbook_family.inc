@@ -232,7 +232,7 @@ function addressbook_family_list() {
 	$page .= '<legend>'.t('Filter').'</legend>';
 	
 	$page .= '<div class="form-item">';
-	$page .= '<label>'.t('Achternaam').' :</label>';
+	$page .= '<label>'.t('Last name').' :</label>';
 	$page .= '<input id="text" name="Search" size="40" maxlength="40" type="text" value="'.$Search.'"> ';
 	$page .= addressbook_hiddenlink('AddressbookForm','','','Search',t('Search'));
 	$page .= '<div class="description">';
@@ -436,7 +436,7 @@ function addressbook_family_view( $fid = -1)  {
 	$page .= '<th><b>'.t('Phote').'</b></th>';
 	$page .= '<th><b>'.t('Name').'</b></th>';	
 	$page .= '<th class="active"><b>'.t('Birthday').'</b></th>';
-	$page .= '<th><b>'.t('Mobiel').'</b></th>';
+	$page .= '<th><b>'.t('Mobile').'</b></th>';
 	$page .= '<th><b>'.t('Email').'</b></th>';	
 	$page .= '</tr>';
 	$page .= '</thead>';

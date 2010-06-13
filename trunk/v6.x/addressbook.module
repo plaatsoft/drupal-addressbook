@@ -281,7 +281,7 @@ function addressbook_cron() {
     $current_time=date('H');
 
     if ($current_time==0) {
-      watchdog('cron', t('Addressbook birthday cron'));
+      watchdog('cron', 'Addressbook birthday cron');
 
       // Fetch all members with are celebrating there birtday
       $query='
@@ -320,13 +320,12 @@ function addressbook_cron() {
           $body=str_replace("%user_age", $user_age, $body);
           $body=str_replace("%site_name", $site_name, $body);
 
-          if (drupal_mail('Addressbook', 'send', $email, user_preferred_language($user), array('subject'=>$subject,'body'=>$body))) 
-          {           
-            watchdog('cron', t('Sent birthday email to ').$email);
+          if (drupal_mail('Addressbook', 'send', $email, user_preferred_language($user), array('subject'=>$subject,'body'=>$body))) {           
+            watchdog('cron', 'Sent birthday email to '.$email);
           }
           else 
           {
-            watchdog('cron', t('Unable to email to ').$email);
+            watchdog('cron', 'Unable to email to '.$email);
           }
         }
       }
