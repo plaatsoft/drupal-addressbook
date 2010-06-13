@@ -620,10 +620,6 @@ msgstr "Actieve rollen"
 msgid "Interesing Roles"
 msgstr "Geinterreseerd rollen"
 
-#: addressbook.module:36
-msgid "v4.1"
-msgstr "v4.1"
-
 #: addressbook.module:81
 msgid "Addressbook module"
 msgstr "Adresboek module"

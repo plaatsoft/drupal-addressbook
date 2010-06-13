@@ -81,6 +81,10 @@ Release Notes
 - Improve member and family delete. Delete all related data.
 - Rebuild birthday block overview.
 
+13-06-2010 v6.x-4.2
+- Bugfix: Make all string literals unqiue.
+- Added English and Dutch translation.
+ 
 Known Minor Issues
 ------------------
 - Role definitions may not contain spaces
