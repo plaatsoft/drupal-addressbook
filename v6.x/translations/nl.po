@@ -782,7 +782,7 @@ msgstr "Adresboek database tabellen zijn aangemaakt"
 
 #: addressbook.info:0
 msgid "Global Addressbook with some nice features"
-msgstr "Adresboek met vele interresant opties"
+msgstr "Adresboek met vele interresante opties"
 
 #: addressbook.info:0
 msgid "Other"

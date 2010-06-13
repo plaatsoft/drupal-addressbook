@@ -105,7 +105,7 @@ function addressbook_mainmenu() {
 	$page .= '<fieldset>' ;	
 	$page .= '<legend>'.t('Note').'</legend>';
 	$page .= '<div class="description">';
-	$page .= t('Database information is last updated on').'<b>'.variable_get('addressbook_last_upload_date', '').'</b>';
+	$page .= t('Database information is last updated on').' <b>'.variable_get('addressbook_last_upload_date', '').'</b>';
 	$page .= '</div>';
 	$page .= '</fieldset>' ;
 	
