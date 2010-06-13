@@ -759,7 +759,7 @@ function addressbook_family_remove() {
 	$page .= t("Delete selected family. Are you sure?");
 	$page .= '</h4>';
 	
-	$page .= t("<br/>");
+	$page .= "<br/>";
 
 	$page .= addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyDelete',t('Yes'));
 	$page .= ' | '.addressbook_hiddenlink('AddressbookForm','fid',$fid,'FamilyEdit',t('No'));
